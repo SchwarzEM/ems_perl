@@ -1,2 +1,2 @@
 # ems_perl
-Perl scripts written for diverse projects, from ~2010 to 2018+.
+These Perl scripts were written by Erich Schwarz <ems394@cornell.edu> for a variety of projects from ~2010 to 2018+; some of these projects were published (https://scholar.google.com/citations?user=VllBDvcAAAAJ) while others fell into obscurity.  They are presented very much as-is (i.e., they are organized quasi-historically by project-related directories, with only sporadic efforts to group them more sensibly by purpose-related directories).  Over time, this organization may improve, but no promises can currently be made.
