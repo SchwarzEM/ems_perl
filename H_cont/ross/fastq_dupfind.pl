@@ -1,0 +1,258 @@
+#!/usr/bin/env perl
+
+# fastq_dupfind.pl -- Ross Hall <rossh@unimelb.edu.au>, 7/1/2010.
+# Purpose: from paired-read FASTQ file, find sequences with exact duplicates and only print up to "max_duplicates_printed" duplicates.
+
+# Detailed purpose:
+#
+# Script reads sequences from a FASTQ file with paired
+# illumina reads /1, /2
+#
+# Note1: Assumes 8 lines for each paired read (4x headers + 2x qual + 2x sequence)
+# Note2: Memory intensive - Will use use lots of RAM for large datasets
+#
+# Finds sequences which have exact duplicates and only prints
+# up to max_duplicates_printed duplicates. If the number of
+# duplicates is greater than max_duplicates_printed, then
+# print the duplicates with the top average quality scores.
+#
+# Usage: fastq_dupfind2.pl input_FASTQpaired_file max_duplicates_printed
+#
+#  eg fastq_dupfind2.pl input_FASTQpaired_file 20 > output_FASTQpaired_file
+#
+#  Will output all sequence pairs which have <= 20 duplicates.
+#  If a sequence pair has more than 20 exact sequence duplicates,
+#  output the top 20 seq pairs - sorted on average quality score.
+
+use strict;
+use warnings;
+
+if ( @ARGV != 2 ) {
+    print STDERR
+      "Usage: fastq_dupfind2.pl input_FASTQpair_file max_duplicates_printed\n";
+    exit(1);
+}
+
+my $infile = shift;
+my $maxq   = shift;
+
+open( INFILE, $infile ) || &ErrorMessage( "Cannot open file " . $infile );
+
+my %seqhash;
+my %qualhash;
+my %qualhashname;
+
+my $eflag = 0;
+my $pc    = 0;
+
+print STDERR "Building hashes\n";
+while (1) {
+    last if ($eflag);
+    if ( $pc > 0 && $pc % 100000 == 0 ) {
+        print STDERR ".";
+    }
+    &buildHash();
+    $pc++;
+}
+print STDERR "\n";
+
+my @keys = keys(%seqhash);
+print STDERR "No. of uniq pairs: " . scalar(@keys) . "\n";
+
+close(INFILE);
+
+print STDERR "Re read file and output non-dupe sequences.\n";
+
+# re-read the input file and only print up to 20 duplicates
+
+open( INFILE, $infile ) || &ErrorMessage( "Cannot open file " . $infile );
+
+$pc    = 0;
+$eflag = 0;
+while (1) {
+    last if ($eflag);
+    if ( $pc > 0 && $pc % 1000 == 0 ) {
+        print STDERR ".";
+    }
+    &processDupes($maxq);
+    $pc++;
+}
+print STDERR "\n";
+
+sub processDupes {
+    my $maxq = shift;
+
+    if ( !eof(INFILE) ) {
+        my $header1  = <INFILE>;
+        my $seq1     = <INFILE>;
+        my $qheader1 = <INFILE>;
+        my $qual1    = <INFILE>;
+        my $header2  = <INFILE>;
+        my $seq2     = <INFILE>;
+        my $qheader2 = <INFILE>;
+        my $qual2    = <INFILE>;
+        my $skey     = $seq1 . $seq2;
+        $skey =~ s/\n//g;
+
+        if ( $seqhash{$skey} < 0 ) {
+
+            # ignore
+        }
+        elsif ( $seqhash{$skey} == 1 ) {
+            print $header1;
+            print $seq1;
+            print $qheader1;
+            print $qual1;
+            print $header2;
+            print $seq2;
+            print $qheader2;
+            print $qual2;
+            $seqhash{$skey} = -1;
+
+        }
+        elsif ( $seqhash{$skey} <= $maxq ) {
+            &printMulti($skey);
+            $seqhash{$skey} = -1;
+        }
+        else {
+
+            # there are more than $maxq duplicates
+            &printMultiSelect( $skey, $maxq );
+            $seqhash{$skey} = -1;
+        }
+    }
+    else {
+        $eflag = 1;
+    }
+}
+
+sub printMulti {
+    my $key = shift;
+
+    my $aptr = $qualhash{$key};
+    my $pseq = $key;
+    foreach my $x (@$aptr) {
+
+        my $pqual   = $x;
+        my $plength = length($x);
+
+        #		print STDERR "$x" . "\t" . $qualhashname{$pqual} . "\n";
+        my $header  = $qualhashname{$pqual};
+        my $header1 = substr( $header, 0, length($header) - 2 ) . "/1";
+        my $header2 = substr( $header, 0, length($header) - 2 ) . "/2";
+
+        print "$header1\n";
+        print substr( $pseq, 0, $plength / 2 ) . "\n";
+        print "+\n";
+        print substr( $pqual, 0, $plength / 2 ) . "\n";
+
+        print "$header2\n";
+        print substr( $pseq, -( $plength / 2 ), $plength / 2 ) . "\n";
+        print "+\n";
+        print substr( $pqual, -( $plength / 2 ), $plength / 2 ) . "\n";
+
+    }
+}
+
+sub printMultiSelect {
+    my $key  = shift;
+    my $maxq = shift;
+
+    my $aptr   = $qualhash{$key};
+    my $pseq   = $key;
+    my @sorted = sort { &averageQualDescending } @$aptr;
+    my $n      = 0;
+    foreach my $x (@sorted) {
+        my $pqual   = $x;
+        my $plength = length($x);
+        my $header  = $qualhashname{$pqual};
+        my $header1 = substr( $header, 0, length($header) - 2 ) . "/1";
+        my $header2 = substr( $header, 0, length($header) - 2 ) . "/2";
+
+        print "$header1\n";
+        print substr( $pseq, 0, $plength / 2 ) . "\n";
+        print "+\n";
+        print substr( $pqual, 0, $plength / 2 ) . "\n";
+
+        print "$header2\n";
+        print substr( $pseq, -( $plength / 2 ), $plength / 2 ) . "\n";
+        print "+\n";
+        print substr( $pqual, -( $plength / 2 ), $plength / 2 ) . "\n";
+        $n++;
+        last if ( $n > $maxq );
+    }
+}
+
+sub buildHash {
+    if ( !eof(INFILE) ) {
+        my $header1  = <INFILE>;
+        my $seq1     = <INFILE>;
+        my $qheader1 = <INFILE>;
+        my $qual1    = <INFILE>;
+        my $header2  = <INFILE>;
+        my $seq2     = <INFILE>;
+        my $qheader2 = <INFILE>;
+        my $qual2    = <INFILE>;
+        my $skey     = $seq1 . $seq2;
+        my $quality  = $qual1 . $qual2;
+        $skey    =~ s/\n//g;
+        $quality =~ s/\n//g;
+        $header1 =~ s/\n//g;
+
+        # The paired quality is used as a key for a hash of sequence names
+        $qualhashname{$quality} = $header1;
+
+        if ( !exists( $seqhash{$skey} ) ) {
+
+            # if the paired seq haven't been seen yet
+            # create hash key
+            $seqhash{$skey} = 1;
+
+            # Create a quality array and add paired quality
+            my @qarray;
+            push( @qarray, $quality );
+            $qualhash{$skey} = \@qarray;
+
+        }
+        else {
+
+            # we have already seen this seq pairing - a duplicate
+            # add 1 to the paired seq counter
+            $seqhash{$skey}++;
+
+            # Add the paired quality to the list of quals for this paired seq
+            my $aptr = $qualhash{$skey};
+            push( @$aptr, $quality );
+
+        }
+    }
+    else {
+        $eflag = 1;
+    }
+}
+
+sub hashValueDescendingNum {
+    $seqhash{$b} <=> $seqhash{$a};
+}
+
+sub averageQualDescending {
+    &getQscore($b) <=> &getQscore($a);
+}
+
+sub getQscore {
+    my $str = shift;
+
+    my @sarray = split( //, $str );
+    my $sum = 0;
+    foreach my $x (@sarray) {
+        $sum += ord($x) - 64;
+    }
+    return ( $sum / (@sarray) );
+}
+
+sub ErrorMessage {
+    my $msg = shift;
+    print STDERR "Fatal error: $msg\n";
+    exit(1);
+}
+

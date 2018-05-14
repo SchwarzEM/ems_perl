@@ -1,0 +1,95 @@
+
+Date: Sat, 10 Jul 2010 17:29:54 +0100
+From: Sujai Kumar <sujai.kumar@ed.ac.uk>
+To: Erich Schwarz <schwarz@tenaya.caltech.edu>
+Subject: Re: scripts for filtering out contaminant genomic DNA
+
+Part I
+
+For excess copies of mitochondrial dna, I found that the best way was to
+simply run velvet with a very high cov_cutoff (you will have to decide what
+"very high" means for your dataset - depending on genomic cov, and kmer
+length (because velvet uses kmer coverage as its metric, cov_cutoff will be
+reduced when you use smaller kmers).
+
+This will result in contigs that should only be mitochondrial contigs (but
+if you want to be doubly sure, you can do an alignment to known nematode
+mito genomes and identify mito contigs that way).
+
+You can then identify mito reads by either mapping all reads back to the
+mito contigs using your favourite mapper, or by using velvet's LastGraph
+file (this only works if you run velvetg with -read_trkg yes) using the
+script velvet_getreadspercontig.pl (note, the last couple of lines in the
+script may not work on newer 100 bp runs because velvet's Sequences file
+seems to split fasta reads across lines. So you might have to first convert
+the Sequences file to single-line fasta or change the last few script lines)
+
+Part II
+
+Here's how I identify bacterial/other contaminants:
+
+1. First run velvet/any assembler to get all contigs
+
+2. Create taxonomy based subsets of ncbi's nt/nr subsets (or, if you're
+feeling particularly adventurous, create subsets of wgs, est_others etc as
+well) for taxid nematoda (6231) and taxid rickettsiales (taxid 766, for
+example)
+
+You probably already know how to create a taxomomy based blast db subset,
+but in case you don't:
+
+a. Get the following files from ftp://ftp.ncbi.nih.gov/pub/taxonomy/
+taxdump.tar.gz (tar gunzip it - you need names.dmp and nodes.dmp)
+gi_taxid_nucl.dmp.gz
+gi_taxid_prot.dmp.gz
+(I usually gunzip both and cat them into one gi_taxid.dmp.gz)
+
+b. To create nematoda (taxid 6231) subset of nt, do this:
+
+taxid_children.pl 6231 nodes.dmp | taxid2gid.pl -d
+/exports/work/blast/nt - >nt_Nematoda.gids
+
+blastdb_aliastool -gilist nt_Nematoda.gids -db /exports/work/blast/nt
+-out nt_Nematoda
+
+(blastdb_aliastool ships with the lastest ncbi blast+ suite,
+taxid2gid.plassumes you have gi_taxid.dmp.gz
+in current dir, but you can set a path to it if you like using the -g option
+)
+
+It's much smarter/more portable to use ncbi eutils, but i find this faster
+overall though more of a pain to set up initially. BioPerl also has some of
+these features but I find it too slow.
+
+3. Blast your contigs against nt_nematoda and nt_rickettsiales (we use an
+sge cluster, and if you split up the contigs file into subsets of a few
+thousand each, this doesn't take as long as you might think) - save results
+in tabular format. You can save some disk space by getting only the top hit
+per contig rather than all hits.
+
+4. Run blast_separate_taxa.pl - sorry this is not well documented, but this
+is how you would use it:
+
+blast_separate_taxa.pl -b1 contigs_nt_nematoda.out -b2
+contigs_nt_rickettsiales.out -d 50 -b 100
+
+Look inside the script for more blast hit threshold options (--evalue,
+--length, --perc_id), but in this case the script uses only those hits where
+the bit score is greater than -b (or --bitscore 100 in this case), and
+creates three files:
+
+a. contigs_nt_nematoda.out.only - contigs that hit nematoda only, or if it
+hit both nematoda and rickettsiales, then the best bit score for the
+nematoda hit was at least 50 (-d option) more than the best bit score for a
+rickettsiales hit for that contig.
+
+b. contigs_nt_rickettsiales.out.only - same as above, but vice versa
+
+c. hittiing.both (you can change the default filename using the -t option) -
+contigs that hit both blast databases at the given -b, -p -e, or -l cutoffs.
+
+Once you have the contigs (you'll have to decide what a sensible score
+difference is, and what blast cutoffs you want to use for evalue, length,
+percentage id, etc), you can get the reads that made up the contigs using
+either read mapping, or the velvet_getreadspercontig script above.
+

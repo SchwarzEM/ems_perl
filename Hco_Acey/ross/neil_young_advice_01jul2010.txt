@@ -1,0 +1,39 @@
+Hi Erich, I have forwarded your query onto our bioinformatician.
+There are a few nifty tools we use here.
+I use a program called fastqc
+(http://www.bioinformatics.bbsrc.ac.uk/projects/fastqc/) to determine the
+overall quality of my fastq reads. Based on the report I trim my fastq reads
+back, it is almost always back to 50 bp (using 76 bp output from the
+machine). 
+I also perform a search for adapters
+This is the usual culprit on the 3' end
+GATCGGAAGAGCGGTTCAGCAGGAATGCCG
+So a search for (grep "GATCGGAAGAGCGG") usually finds quite a few adapters
+(depending on the quality of library prep). I once found this adapter in 95%
+of my reads!!!!!
+Ross Hall has perl scripts for removing the adapters and trimming fastq
+reads. He will be in touch shortly. Ross and Aaron Jex have also been
+working on a script that will remove redundancy from the libraries prior to
+assembly. This may also be of use to you.
+Good luck!
+Best regards,
+Neil
+
+
+On 1/07/10 12:42 PM, "Erich Schwarz" <schwarz@tenaya.caltech.edu> wrote:
+
+> Hi Neil,
+> 
+>     What (if any) software have you found helpful in doing the
+> following?
+> 
+>     1. Pruning back Illumina/Solexa reads so that they are shorter
+> but of higher overall quality
+> 
+>     2. Deleting reads outright if they're weak
+> 
+> Thanks for any information you have!
+> 
+> 
+> --Erich
+> 

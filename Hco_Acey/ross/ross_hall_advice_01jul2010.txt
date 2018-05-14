@@ -1,0 +1,21 @@
+Hi Erich,
+
+I have attached 3 scripts. All have details in the header on their usage.
+Note all scripts write to standard out and also that fastq_dupfind.pl is
+very memory intensive (~30 GB for 40 million reads).
+
+Any queries/problems, please let me know.
+
+Cheers
+
+Ross
+
+
+-- 
+Ross Hall
+
+Bioinformatician
+Gasser Laboratory
+Department of Veterinary Science
+University of Melbourne
+Office:  +613 8001 2415

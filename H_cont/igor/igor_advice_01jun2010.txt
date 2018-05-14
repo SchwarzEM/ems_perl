@@ -1,0 +1,111 @@
+Hi Erich,
+
+Sounds reasonable. If the libraries were sequenced sometime ago, they 
+may benefit from some additional filtering. Attached is a script that 
+does that on fastq files (sequence.txt). You can specify how much to 
+trim on either end and to filter on either mean quality of the read or 
+on a certain quality threshold (any reads that have any call with 
+quality below that value will be filtered out).
+
+Aligning reads to the sheep genome is definitely a good idea. I'm not 
+sure about limiting yourself to a particular k value based on somebody's 
+suggestion since it is so dependent on read coverage. It may be a good 
+place to start.
+
+Let me know if you need any additional help or have any questions about 
+the script.
+
+Igor.
+
+On 6/30/10 8:23 PM, Erich Schwarz wrote:
+> Hi Igor,
+>
+>      Well, it's like this.  After months on end of rewriting and
+> submitting genome papers, travelling, and general craziness, I have
+> some actual quiet time in lab [!].  So I'm finally in a position to
+> sit down, think coherently, and work to get the Haemonchus contortus
+> genome out of the slough.
+>
+>      While I was travelling, I had conversations in Hinxton with
+> people from both the Sanger and from Blaxter's lab who are doing
+> next-gen sequencing of nematode genomes.  Those conversations
+> convinced me that the H. contortus genome should be assemble-able to
+> significantly better quality than we currently have it.
+>
+>      My current plan is to do the following:
+>
+>      1. On redivivus, get working personal copies of velvet 1.0
+> (done) and ABySS 2.0 (not yet done, because I need to debug the
+> compilation).
+>
+>      2. Take the backlog of existing 2x75 nt H. contortus sequence
+> data, and do whatever's advisable to prune off bad nucleotides or
+> reads (maybe nothing, but maybe the last 3' nucleotides would be
+> good to cut).  [This is what has me asking you about software.]
+>
+>      3. Map *all* the reads for our H. contortus data against the
+> sheep genome (recently done to 3x coverage).  Then, censor any reads
+> that turn out to be from sheep rather than nematodes -- since
+> removing contaminants before assembly should boost assembly speed
+> and quality.
+>
+>      4a. After doing all that, run velvet 1.0 on our existing data
+> with k=53 (recommended by Sanger).  See if I get anything better
+> than our current rather fragmentary assembly.  There was some
+> question about just why, given how many reads we had, its N50 was
+> ~1.0 kb.  Maybe doing steps 1-3 with all our data will give us
+> something better, or maybe not.
+>
+>      4b. At the same time, run ABySS with k=53, which I heard from
+> two different groups could at least sometimes give significantly
+> better N50s than velvet.
+>
+>      5. Compare the assemblies and see if I see any improvement from
+> what Ali was able to get in February.
+>
+>      6. Once I know that I have done a decent job with the *existing*
+> data, start making more genomic libraries, since I have a lot more
+> McMaster genomic DNA from Robin Gasser now.  In particular, I would
+> like to try the strategy that seems to be working for the Broad:
+>
+>      2x100 nt reads on 180-nt inserts
+>      4 kb jumping libraries with ~10% size variation
+>
+>      I think we should do the jumping libraries even if we don't do
+> the 2x100 reads.  In fact, it might well be a good idea to order an
+> Illumina kit for these libraries (now that Illumina has, I'm told,
+> fixed the defects in the kit) and just start making a jumping H.
+> contortus library anyway.  By the time we have that contructed and
+> sequenced, a good deal of time will have passed, so it may make
+> sense to get started before I've had time to analyse the existing
+> data.  Also, once we have this technology working, it can be applied
+> productively to PS1010 and Steinernema -- it'll definitely be of
+> value for more than just this one project.
+>
+>
+>    
+>> If for some reason you believe that you need to do additional
+>> filtering, you can parse the quality scores that are associated
+>> with each base call. It is relatively easy to do using Perl. I can
+>> show you how to do that if you want. For instance, I have a script
+>> that converts qseq files to fasta or fastq and can also calculate
+>> the average quality score for each read and trim a pre-determined
+>> number of bases from either end. But I have to say, that at least
+>> recently, the vast majority of reads that pass the filtering step
+>> are of quite high quality, so additional filtering may not be
+>> necessary ...
+>>      
+>      I believe you.  But since I'll be working with sequence data
+> that were gathered (mostly) many months ago, it could well be a good
+> idea for me to try additional filtering -- sequence data we
+> generated in 2009 may not be as good as the stuff you guys are
+> routinely producing now.
+>
+>      So, yes, I'd definitely appreciate any Perl script you have that
+> will let me automatically prune bad nucleotides!  And any other
+> advice you have would also be very welcome.
+>
+>
+> --Erich
+>
+>    
