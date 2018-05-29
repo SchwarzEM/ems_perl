@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# diff_genesets.pl -- Erich Schwarz <emsch@its.caltech.edu>, 8/24/2009.
+# diff_genesets.pl -- Erich Schwarz <ems394@cornell.edu>, 5/29/2018.
 # Purpose: list non-/overlap genes in GFFs; optional diskfile, prog. rep.
 
 use strict;
@@ -13,8 +13,24 @@ use Tie::File;
 my $tiefile;
 my $prog_rept;
 
-GetOptions ( "tiefile"  => \$tiefile, 
-             "progress" => \$prog_rept, ); 
+# Compare coordinates of genes listed in 2 (or more) input files.
+my @files = ();
+
+my $help;
+
+GetOptions ( 'infiles=s{,}' => \@files,
+             'tiefile'      => \$tiefile, 
+             'progress'     => \$prog_rept,
+             'help'         => \$help,      ); 
+
+if ( $help or (! @files ) ) {
+     die "Format: diff_genesets.pl\n",
+         "    --infile|-i     [input files: compare coordinates of genes listed in 2 (or more) input files]\n",
+         "    --tiefile|-t    [optionally, to save on RAM use, tie a big hashref to a uniquely named DB file]\n",
+         "    --progress|-p   [optionally, track progress as the (potentially long) program runs]\n",
+         "    --help|-h       [print this message]\n",
+         ;
+}
 
 # Link transcripts/CDSes to genes;
 my %tx2gene = ();
@@ -75,9 +91,6 @@ my $text_pattern_2_GFF3
       . ' ([+|-]) \t (\d+) '                 # strand ori.; phase
       . ' \t ID=\S+Parent=Transcript:(\S+)'  # tx. name
       ;
-
-# Compare coordinates of genes listed in 2 (or more) input files.
-my @files = @ARGV;
 
 # By default, data stored in hashrefs in RAM.
 my $gene_exists_ref;
