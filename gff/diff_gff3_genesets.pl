@@ -89,9 +89,13 @@ my $gene2equivs_ref;
 my $coord2gene_ref;
 my $date = q{};
 
-# Optionally, tie a big hashref to a uniquely named DB file:
-if ($tiefile) { 
+# I can use $date either for hashref DB files *or* progress reports, so set this value if I'm using either.
+if ( $tiefile or $prog_rept ) {
     $date = join('.', &get_local_date());
+}
+
+# Optionally, tie a big hashref to a uniquely named DB file:
+if ( $tiefile ) { 
     my $db_name1       = 'coord2gene.'  . $date . '.db';
     $db_name1          = failsafe_name($db_name1);
     $coord2gene_ref = DBM::Deep->new( $db_name1 );
