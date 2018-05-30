@@ -10,6 +10,7 @@ use autodie;
 use Getopt::Long;
 use DBM::Deep;
 use Tie::File;
+use File::Basename;
 
 my $tiefile;
 my $prog_rept;
@@ -244,11 +245,22 @@ foreach my $int_gene ( sort keys %{ $gene_exists_ref } ) {
     my $gene = q{}; 
     $gene = $data_ref->{'int_gene'}->{$int_gene}->{'gene'};
     print "$gene";
-    print "\t$gene_exists_ref->{$int_gene}";
+
+    # I want the *basenames* of source files, not full-length names.
+    my $file_source = $gene_exists_ref->{$int_gene};
+    $file_source = basename($file_source);
+    print "\t$file_source";
+    $file_source = q{};   # zero out previous values to prevent carry-over
+
     foreach my $overlap (sort keys %{ $gene2equivs_ref->{$int_gene} } ) { 
         $gene = $data_ref->{'int_gene'}->{$overlap}->{'gene'};
         print "\t$gene";
-        print "\t$gene_exists_ref->{$overlap}";
+
+        # And, get basename of source file for $overlap:
+        $file_source = $gene_exists_ref->{$overlap};
+        $file_source = basename($file_source);
+        print "\t$file_source";
+        $file_source = q{};   # zero out
     }
     print "\n";
 }
