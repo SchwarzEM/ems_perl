@@ -10,7 +10,6 @@ use autodie;
 use Getopt::Long;
 use DBM::Deep;
 use Tie::File;
-use File::Basename;
 
 my $tiefile;
 my $prog_rept;
@@ -88,14 +87,10 @@ my $gene_exists_ref;
 my $gene2equivs_ref;
 my $coord2gene_ref;
 my $date = q{};
-
-# I can use $date either for hashref DB files *or* progress reports, so set this value if I'm using either.
-if ( $tiefile or $prog_rept ) {
-    $date = join('.', &get_local_date());
-}
+$date = join('.', &get_local_date());
 
 # Optionally, tie a big hashref to a uniquely named DB file:
-if ( $tiefile ) { 
+if ($tiefile) { 
     my $db_name1       = 'coord2gene.'  . $date . '.db';
     $db_name1          = failsafe_name($db_name1);
     $coord2gene_ref = DBM::Deep->new( $db_name1 );
@@ -249,22 +244,11 @@ foreach my $int_gene ( sort keys %{ $gene_exists_ref } ) {
     my $gene = q{}; 
     $gene = $data_ref->{'int_gene'}->{$int_gene}->{'gene'};
     print "$gene";
-
-    # I want the *basenames* of source files, not full-length names.
-    my $file_source = $gene_exists_ref->{$int_gene};
-    $file_source = basename($file_source);
-    print "\t$file_source";
-    $file_source = q{};   # zero out previous values to prevent carry-over
-
+    print "\t$gene_exists_ref->{$int_gene}";
     foreach my $overlap (sort keys %{ $gene2equivs_ref->{$int_gene} } ) { 
         $gene = $data_ref->{'int_gene'}->{$overlap}->{'gene'};
         print "\t$gene";
-
-        # And, get basename of source file for $overlap:
-        $file_source = $gene_exists_ref->{$overlap};
-        $file_source = basename($file_source);
-        print "\t$file_source";
-        $file_source = q{};   # zero out
+        print "\t$gene_exists_ref->{$overlap}";
     }
     print "\n";
 }
