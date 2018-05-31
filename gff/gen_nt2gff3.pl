@@ -34,7 +34,8 @@ while (my $input = <$INFILE>) {
                   "$i\t",
                   "$i\t",
                   ".\t.\t.\t",
-                  "seq=$nt",
+                  "seq=$nt;",
+                  "orig_nt=$seq:$i",
                   "\n",
                   ;
         }
