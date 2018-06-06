@@ -172,8 +172,8 @@ foreach my $seq2 (@seqs) {
         my $prev_block_end   = $data_ref->{'seq'}->{$seq}->{'nt'}->{$block_end}->{'prev_nt'};
 
         my $source = $data_ref->{'seq'}->{$seq}->{'nt'}->{$block_start}->{'source'};
-        if ( $source ne $data_ref->{'seq'}->{$seq}->{'nt'}->{$block_start}->{'source'} ) {
-            warn "Discordant source for block in $seq2:$block_start-$block_end\n";
+        if ( $source ne $data_ref->{'seq'}->{$seq}->{'nt'}->{$block_end}->{'source'} ) {
+            warn "Discordant sources for block in $seq2 (nt $block_start vs. nt $block_end)\n";
         }
 
         print "$seq2\t";
