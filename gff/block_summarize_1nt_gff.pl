@@ -103,16 +103,20 @@ while (my $input = <$GFF>) {
     # instance input line:
     # chrI_pilon      c_elegans.PRJNA13758.WS264.genomic.fa   nt      1835    1835    .       .       .       seq=G;orig_nt=I:1
 
-    if ( $input =~ /\A (\S+) \t \S+ \t nt \t (\d+) \t (\d+) \t \. \t \. \t \. \t seq=\S; orig_nt=(\S+):(\d+) \z/xms ) {
+    if ( $input =~ /\A (\S+) \t (\S+) \t nt \t (\d+) \t (\d+) \t \. \t \. \t \. \t seq=\S; orig_nt=(\S+:\d+) \z/xms ) {
         $seq         = $1;
-        my $nt1      = $2;
-        my $nt2      = $3;
+        my $source   = $2;
+        my $nt1      = $3;
+        my $nt2      = $4;
+        my $prev_nt  = $5;
 
         if ( $nt1 != $nt2 ) {
             die "Unequal nt positions in $input\n";
         }
 
-        $data_ref->{'seq'}->{$seq}->{'nt'}->{$nt1}->{'status'} = $pos;
+        $data_ref->{'seq'}->{$seq}->{'nt'}->{$nt1}->{'status'}  = $pos;
+        $data_ref->{'seq'}->{$seq}->{'nt'}->{$nt1}->{'source'}  = $source;
+        $data_ref->{'seq'}->{$seq}->{'nt'}->{$nt1}->{'prev_nt'} = $prev_nt;
     }
     else {
         die "Cannot parse input: $input\n";
@@ -163,7 +167,43 @@ foreach my $seq2 (@seqs) {
     foreach my $block_start (@block_starts) {
         my $block_status = $data_ref->{'seq'}->{$seq2}->{'block_start'}->{$block_start}->{'block_status'};
         my $block_end    = $data_ref->{'seq'}->{$seq2}->{'block_start'}->{$block_start}->{'block_end'};
-        print "$seq2\t$block_status\t$block_start\t$block_end\n";
+
+        # non-lifted-over nt will not have previous nt coordinates
+        my $prev_block_start = 'n/a';
+        my $prev_block_end   = 'n/a';
+
+        if ( exists $data_ref->{'seq'}->{$seq2}->{'nt'}->{$block_start}->{'prev_nt'} ) {
+            $prev_block_start = $data_ref->{'seq'}->{$seq2}->{'nt'}->{$block_start}->{'prev_nt'};
+        }
+        if ( exists $data_ref->{'seq'}->{$seq2}->{'nt'}->{$block_end}->{'prev_nt'} ) {
+            $prev_block_end = $data_ref->{'seq'}->{$seq2}->{'nt'}->{$block_end}->{'prev_nt'};
+        }
+
+        my $source = q{.};   # non-lifted-over nt will not have a 'source'
+
+        if ( exists $data_ref->{'seq'}->{$seq2}->{'nt'}->{$block_start}->{'source'} ) {
+            $source = $data_ref->{'seq'}->{$seq2}->{'nt'}->{$block_start}->{'source'};
+        }
+
+        if (      ( exists $data_ref->{'seq'}->{$seq2}->{'nt'}->{$block_end}->{'source'}     )
+              and ( $source ne $data_ref->{'seq'}->{$seq2}->{'nt'}->{$block_end}->{'source'} ) ) {
+            warn "Discordant sources for block in $seq2 (nt $block_start vs. nt $block_end)\n";
+        }
+
+        print "$seq2\t";
+        print "$source\t";
+        print "$block_status\t";
+        print "$block_start\t";
+        print "$block_end\t";
+        print ".\t.\t.\t";
+
+        if ( ( $prev_block_start eq 'n/a' ) and ( $prev_block_end eq 'n/a' ) ) {
+            print 'orig_nt:n/a';
+        }
+        else {
+            print 'orig_nt:', $prev_block_start, '-', $prev_block_end;
+        }
+        print "\n";
     }
 }
 
