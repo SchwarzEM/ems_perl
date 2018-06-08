@@ -18,6 +18,8 @@ my @seqs    = ();
 my $seq     = q{};
 my $seq_len = 0;
 
+my $header = '##gff-version 3';
+
 my $data_ref;
 
 my $help;
@@ -190,6 +192,11 @@ foreach my $seq2 (@seqs) {
             warn "Discordant sources for block in $seq2 (nt $block_start vs. nt $block_end)\n";
         }
 
+        # Do this exactly once, at the start of each text output:
+        print "$header\n" if $header;
+        $header = q{};
+
+        # Do this for every line of output text:
         print "$seq2\t";
         print "$source\t";
         print "$block_status\t";
@@ -198,10 +205,10 @@ foreach my $seq2 (@seqs) {
         print ".\t.\t.\t";
 
         if ( ( $prev_block_start eq 'n/a' ) and ( $prev_block_end eq 'n/a' ) ) {
-            print 'orig_nt:n/a';
+            print 'Note=orig_nt:n/a';
         }
         else {
-            print 'orig_nt:', $prev_block_start, '-', $prev_block_end;
+            print 'Note=orig_nt:', $prev_block_start, '-', $prev_block_end;
         }
         print "\n";
     }
