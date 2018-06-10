@@ -16,6 +16,9 @@ while (my $input = <>) {
         my $back  = $2;
         print "$front\tliftOver-UCSC+N2_WS264 \t$back\n";
     }
+    elsif ( $input =~ /\A [#][#] gff-version \s+ \d+ \z/xms ) { 
+        print "$input\n";
+    }
     elsif ( $input !~ /\A [#] /xms ) {
        die "Cannot parse: $input\n";
     }
