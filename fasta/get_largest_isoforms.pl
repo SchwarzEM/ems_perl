@@ -31,6 +31,9 @@ my %ok_headers = ( wormbase => 'wormbase',
 
                    parasite => 'parasite',
                    par      => 'parasite',
+
+                   column3  => 'column3',
+                   col3     => 'column3',
 );
 
 my $header  = q{};
@@ -125,6 +128,13 @@ foreach my $infile (@infiles) {
                 $header  = $1;
                 $protein = $2;
                 $gene    = $3; 
+                $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
+            }
+
+            elsif ( ( $header_type eq 'column3' ) and ( $input =~ /\A > ( (\S+) \s+ \S+ (\S+) \s* ) \z/xms ) ) {
+                $header  = $1;
+                $protein = $2;
+                $gene    = $3;
                 $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
             }
 
