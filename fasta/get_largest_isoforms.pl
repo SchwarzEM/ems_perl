@@ -49,7 +49,7 @@ GetOptions ( 'infiles=s{,}' => \@infiles,
 if ( $help or (! @infiles) ) { 
     die "Format: get_largest_isoforms.pl\n",
         "    --infile|-i   <input stream/files>\n",
-        "    --type|-t     [header type: 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', 'maker|mak', or 'parasite|par'; default is 'wormbase']\n",
+        "    --type|-t     [header type: 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', 'maker|mak', 'parasite|par', or 'column3|col3'; default is 'wormbase']\n",
         "    --help|-h     [print this message]\n",
         ;
 }
