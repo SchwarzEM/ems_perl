@@ -131,7 +131,7 @@ foreach my $infile (@infiles) {
                 $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
             }
 
-            elsif ( ( $header_type eq 'column3' ) and ( $input =~ /\A > ( (\S+) \s+ \S+ (\S+) \s* ) \z/xms ) ) {
+            elsif ( ( $header_type eq 'column3' ) and ( $input =~ /\A > ( (\S+) \s+ \S+ \s+ (\S+) \s* ) \z/xms ) ) {
                 $header  = $1;
                 $protein = $2;
                 $gene    = $3;
