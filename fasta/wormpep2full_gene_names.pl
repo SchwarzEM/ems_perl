@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 # wormpep2full_gene_names.pl -- Erich Schwarz <ems394@cornell.edu>, 4/3/2018
-# Purpose: given headers from wormpep (in format seen for WS264, 4/2018) emit full ID stream.
+# Purpose: given headers from wormpep (in format seen for WS264, 4/2018) emit full ID stream; do not emit 2+ identical IDs.
 
 use strict;
 use warnings;
@@ -20,14 +20,22 @@ while (my $input = <>) {
         my $cds         = $1;
         my $gene        = $2;
         my $locus       = q{};
+
         $cds =~ s/[a-z]\z//;
+
         my @id_tags = ($gene, $cds);
+
         if ( $input =~ / locus = (\S+) /xms ) {
             $locus = $1;
             push @id_tags, $locus;
         }
+
         my $full_id = join '|', @id_tags;
-        print "$full_id\n";
+
+        if (! exists $seen{$full_id} ) {
+            print "$full_id\n";
+            $seen{$full_id} = 1;
+        }
     }
 }
 
