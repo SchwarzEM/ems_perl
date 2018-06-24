@@ -16,7 +16,7 @@ my %seen         = ();
 
 while (my $input = <>) { 
     chomp $input;
-    if ($input =~ /\A > (\S+) \b .+ (WBGene\d+) /xms) { 
+    if ($input =~ /\A [>] (\S+) \b .+ (WBGene\d+) /xms) { 
         my $cds         = $1;
         my $gene        = $2;
         my $locus       = q{};
@@ -36,6 +36,9 @@ while (my $input = <>) {
             print "$full_id\n";
             $seen{$full_id} = 1;
         }
+    }
+    elsif ( $input =~ /\A [>] /xms ) { 
+        die "Cannot parse FASTA header line: $input\n";
     }
 }
 
