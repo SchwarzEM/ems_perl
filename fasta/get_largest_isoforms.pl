@@ -31,6 +31,9 @@ my %ok_headers = ( wormbase => 'wormbase',
 
                    parasite => 'parasite',
                    par      => 'parasite',
+
+                   column3  => 'column3',
+                   col3     => 'column3',
 );
 
 my $header  = q{};
@@ -46,7 +49,7 @@ GetOptions ( 'infiles=s{,}' => \@infiles,
 if ( $help or (! @infiles) ) { 
     die "Format: get_largest_isoforms.pl\n",
         "    --infile|-i   <input stream/files>\n",
-        "    --type|-t     [header type: 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', 'maker|mak', or 'parasite|par'; default is 'wormbase']\n",
+        "    --type|-t     [header type: 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', 'maker|mak', 'parasite|par', or 'column3|col3'; default is 'wormbase']\n",
         "    --help|-h     [print this message]\n",
         ;
 }
@@ -125,6 +128,13 @@ foreach my $infile (@infiles) {
                 $header  = $1;
                 $protein = $2;
                 $gene    = $3; 
+                $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
+            }
+
+            elsif ( ( $header_type eq 'column3' ) and ( $input =~ /\A > ( (\S+) \s+ \S+ \s+ (\S+) \s* ) \z/xms ) ) {
+                $header  = $1;
+                $protein = $2;
+                $gene    = $3;
                 $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
             }
 
