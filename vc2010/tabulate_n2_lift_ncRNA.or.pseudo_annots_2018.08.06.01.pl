@@ -42,9 +42,7 @@ else {
         ;
 }
 
-# 'FILLER' is here to offset $ARGV[0]
 my @annot_texts = qw(
-    FILLER
     no.lift
     lifted_bad.coding
     lifted_no.ident
@@ -53,7 +51,7 @@ my @annot_texts = qw(
 
 my $INFILE;
 
-foreach my $i (1..4) {
+foreach my $i (0..3) {
     my $annot_file = $annot_files[$i];
     my $annot_text = $annot_texts[$i];
 
