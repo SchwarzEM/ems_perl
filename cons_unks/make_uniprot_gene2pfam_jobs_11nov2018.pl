@@ -30,7 +30,7 @@ my @inputs2 = qw(
     ../pfam_idmappings/zebrafish_uniprot2pfam.alt.tsv.txt
 );
 
-my $input3 = '../panther_idmappings/panther_acc2name_10nov2018.txt';
+my $input3 = '../pfam_idmappings/pfam_acc2name_10nov2018.txt';
 
 my @taxa = qw(
     arabidopsis
