@@ -26,7 +26,7 @@ GetOptions ( 'pmids=s{,}'    => \@gene2pmids,
              'help'          => \$help,   );
 
 if ( $help or (! @gene2pmids) or (! @gene2fams) or (! $key_taxon) ) { 
-    die "Format: fam2annots_14nov2018.pl\n",
+    die "Format: fam2annots_17nov2018.pl\n",
         "    --pmids|-p     [gene2pmid files]\n",
         "    --fams|-f      [gene2fam files]\n",
         "    --key|-k       [key taxon name]\n",
