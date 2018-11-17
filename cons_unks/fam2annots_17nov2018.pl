@@ -15,6 +15,15 @@ my @gene2fams  = ();
 my $key_taxon  = q{};
 my @req_taxa   = ();
 
+my $header = "Gene"
+             . "\tFamily"
+             . "\tGene_summary"
+             . "\tGene_list"
+             . "\tGene_total"
+             . "\tAnnot_sum"
+             . "\tAnnot_sum/gene_total"
+             ;
+
 my $data_ref;
 
 my $help;
@@ -235,6 +244,10 @@ foreach my $final_gene (@key_genes) {
             push @fam_taxgene_counts, $fam_taxgene_count;
         }
         my $fam_taxgene_text = join "; ", @fam_taxgene_counts;
+
+        # Print header only once, at the start:
+        print "$header\n" if $header;
+        $header = q{};
 
         print "$final_gene";
         print "\t$opt_fam";
