@@ -125,14 +125,14 @@ while (my $input = <@ARGV>) {
 
                 print $QSUB '#!/bin/bash', "\n";
                 print $QSUB '#SBATCH --nodes=1', "\n";
-                print $QSUB '#SBATCH --partition=RM', "\n";
+                print $QSUB '#SBATCH --partition=RM-shared', "\n";
                 print $QSUB '#SBATCH --time=012:00:00', "\n";
                 print $QSUB '#SBATCH --ntasks-per-node=8', "\n";
                 print $QSUB '#SBATCH --constraint=EGRESS', "\n";
                 print $QSUB "#SBATCH --job-name=$qsub_file\n";
                 print $QSUB '#SBATCH --mail-type=ALL', "\n";
                 print $QSUB "cd $working_dir ;\n";
-                print $QSUB 'module load GNU/4.8.3 ;', "\n";
+                print $QSUB 'module load gcc/4.8.4 ;', "\n";
                 print $QSUB "echo `date` > $start_time ;\n";
                 print $QSUB "$smrtwrap $pbalign --verbose --nproc 8",
                             " --forQuiver $fofn_file",
