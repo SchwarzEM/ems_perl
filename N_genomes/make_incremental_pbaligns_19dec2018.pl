@@ -125,7 +125,7 @@ while (my $input = <@ARGV>) {
 
                 print $QSUB '#!/bin/bash', "\n";
                 print $QSUB '#SBATCH --nodes=1', "\n";
-                print $QSUB '#SBATCH --partition=RM-shared', "\n";
+                print $QSUB '#SBATCH --partition=RM', "\n";
                 print $QSUB '#SBATCH --time=012:00:00', "\n";
                 print $QSUB '#SBATCH --ntasks-per-node=8', "\n";
                 print $QSUB '#SBATCH --constraint=EGRESS', "\n";
