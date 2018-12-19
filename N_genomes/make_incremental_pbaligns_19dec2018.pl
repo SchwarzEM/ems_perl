@@ -142,7 +142,7 @@ while (my $input = <@ARGV>) {
                             "$progress",
                             " ;\n",
                             ;
-                print $QSUB "qsub $next_qsub_file ;\n";
+                print $QSUB "sbatch $next_qsub_file ;\n";
                 close $QSUB;
             }
             else {
