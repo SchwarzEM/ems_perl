@@ -94,16 +94,16 @@ while (my $input = <@ARGV>) {
                     push @h5_files, "$h5_file";
                 }
 
-                my $fofn_file = "wallacei.bax.h5_filelist_" . "$suffix.$file_no.fofn";
+                my $fofn_file = "nigoni.bax.h5_filelist_" . "$suffix.$file_no.fofn";
                 $fofn_file    = safename($fofn_file);
 
-                my $cmp_h5 = "wallacei.bax.h5_filelist_" . "$suffix.$file_no.cmp.h5";
+                my $cmp_h5 = "nigoni.bax.h5_filelist_" . "$suffix.$file_no.cmp.h5";
                 $cmp_h5    = safename($cmp_h5);
 
-                my $progress = "wallacei.bax.h5_filelist_" . "$suffix.$file_no.pbalign_progress.txt";
+                my $progress = "nigoni.bax.h5_filelist_" . "$suffix.$file_no.pbalign_progress.txt";
                 $progress    = safename($progress);
 
-                my $start_time = "wallacei.bax.h5_filelist_" . "$suffix.$file_no.start_time.txt";
+                my $start_time = "nigoni.bax.h5_filelist_" . "$suffix.$file_no.start_time.txt";
                 $start_time    = safename($start_time);
 
                 open my $FOFN, '>', $fofn_file;
@@ -112,10 +112,10 @@ while (my $input = <@ARGV>) {
                 }
                 close $FOFN;
 
-                my $qsub_file = "job_wallacei.pbalign_" . "$suffix.$file_no.sh";
+                my $qsub_file = "job_nigoni.pbalign_" . "$suffix.$file_no.sh";
                 $qsub_file    = safename($qsub_file);
 
-                my $next_qsub_file = "job_wallacei.pbalign_" . "$suffix.$next_file_no.sh";
+                my $next_qsub_file = "job_nigoni.pbalign_" . "$suffix.$next_file_no.sh";
                 $next_qsub_file    = safename($next_qsub_file);
 
                 open my $QSUB, '>', $qsub_file;
