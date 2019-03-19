@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
-# get_largest_isoforms.pl -- Erich Schwarz <ems394@cornell.edu>, 9/3/2016.
-# Purpose: given a proteome in FASTA format with known pattern of identifiers in the headers, print largest isoform per gene (currently handles WormBase official, augustus, augustus-like '.t\d+', ensembl, FlyBase, or Maker prediction proteomes).
+# get_largest_isoforms.pl -- Erich Schwarz <ems394@cornell.edu>, 7/29/2018.
+# Purpose: given a proteome in FASTA format with known pattern of identifiers in the headers, print largest isoform per gene (currently handles WormBase official, augustus, augustus-like '.t\d+', ensembl, FlyBase, Maker, ParaSite [release 10], ParaSite [pre-release 10], or three-column proteomes).
 
 use strict;
 use warnings;
@@ -18,7 +18,7 @@ my %ok_headers = ( wormbase => 'wormbase',
                    augustus => 'augustus',
                    aug      => 'augustus',
 
-                   aug_like => 'aug_like',
+                   aug_like => 'augustus_like',
 
                    ensembl  => 'ensembl',
                    ens      => 'ensembl',
@@ -31,6 +31,11 @@ my %ok_headers = ( wormbase => 'wormbase',
 
                    parasite => 'parasite',
                    par      => 'parasite',
+
+                   par_old  => 'parasite_old',
+
+                   column3  => 'column3',
+                   col3     => 'column3',
 );
 
 my $header  = q{};
@@ -46,14 +51,24 @@ GetOptions ( 'infiles=s{,}' => \@infiles,
 if ( $help or (! @infiles) ) { 
     die "Format: get_largest_isoforms.pl\n",
         "    --infile|-i   <input stream/files>\n",
-        "    --type|-t     [header type: 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', 'maker|mak', or 'parasite|par'; default is 'wormbase']\n",
+        "    --type|-t     [header types:\n",
+        "                   'wormbase|wb'\n",
+        "                   'augustus|aug'\n",
+        "                   'aug_like'\n",
+        "                   'ensembl|ens'\n",
+        "                   'flybase|fly'\n",
+        "                   'maker|mak'\n",
+        "                   'parasite|par'\n",
+        "                   'par_old'\n",
+        "                or 'column3|col3';\n", 
+        "                   default is 'wormbase']\n",
         "    --help|-h     [print this message]\n",
         ;
 }
 
 if ($header_type) { 
     if (! exists $ok_headers{$header_type} ) { 
-        die "Header type must be 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', or 'maker|mak', not \"$header_type\"\n";
+        die "Header type must be 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', 'maker|mak', 'parasite|par', 'par_old', or 'column3|col3', not \"$header_type\"\n";
     }
     else { 
         # Map to full names of header types, if abbreviated:
@@ -93,12 +108,19 @@ foreach my $infile (@infiles) {
                 $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
             }
 
-            elsif ( ( $header_type eq 'parasite' ) and ( $input =~ /\A > ( (\S+) \b .* \s gene_id= (\S+) \b .* ) \z/xms ) ) {
+            elsif ( ( $header_type eq 'parasite' ) and ( $input =~ /\A > ( (\S+) \b .* \s gene= (\S+) \b .* ) \z/xms ) ) {
                 $header  = $1;
                 $protein = $2;
                 $gene    = $3;
                 $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
             }      
+
+            elsif ( ( $header_type eq 'parasite_old' ) and ( $input =~ /\A > ( (\S+) \b .* \s gene_id= (\S+) \b .* ) \z/xms ) ) {
+                $header  = $1;
+                $protein = $2;
+                $gene    = $3;
+                $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
+            }
 
             elsif ( ( $header_type eq 'augustus' ) and ( $input =~ /\A > ( ( (\S+ \.g\d+) \.t\d+ ) \b .* ) \z/xms ) ) {
                 $header  = $1;
@@ -107,7 +129,7 @@ foreach my $infile (@infiles) {
                 $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
             }
 
-            elsif ( ( $header_type eq 'aug_like') and ( $input =~ /\A > ( ( (\S+) \.t\d+ ) \b .* ) \z/xms ) ) {
+            elsif ( ( $header_type eq 'augustus_like') and ( $input =~ /\A > ( ( (\S+) \.t\d+ ) \b .* ) \z/xms ) ) {
                 $header  = $1;
                 $protein = $2;
                 $gene    = $3;
@@ -125,6 +147,13 @@ foreach my $infile (@infiles) {
                 $header  = $1;
                 $protein = $2;
                 $gene    = $3; 
+                $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
+            }
+
+            elsif ( ( $header_type eq 'column3' ) and ( $input =~ /\A > ( (\S+) \s+ \S+ \s+ (\S+) \s* ) \z/xms ) ) {
+                $header  = $1;
+                $protein = $2;
+                $gene    = $3;
                 $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
             }
 

@@ -1,13 +1,11 @@
 #!/usr/bin/env perl
 
-# wormpep2full_gene_names.pl -- Erich Schwarz <ems394@cornell.edu>, 4/3/2018
-# Purpose: given headers from wormpep (in format seen for WS264, 4/2018) emit full ID stream; do not emit 2+ identical IDs.
+# wormpep2wbgene_table.pl -- Erich Schwarz <ems394@cornell.edu>, 6/24/2018.
+# Purpose: given headers from wormpep (in format seen for WS264, 4/2018) emit "gene\tCDS\tlocus" TSV table; do not emit 2+ identical IDs.
 
 use strict;
 use warnings;
 
-my %cds2fullname = ();
-my %possible_cds = ();
 my %seen         = ();
 
 # Typical wormpep190 lines:
@@ -23,18 +21,13 @@ while (my $input = <>) {
 
         $cds =~ s/[a-z]\z//;
 
-        my @id_tags = ($gene, $cds);
-
         if ( $input =~ / locus = (\S+) /xms ) {
             $locus = $1;
-            push @id_tags, $locus;
         }
 
-        my $full_id = join '|', @id_tags;
-
-        if (! exists $seen{$full_id} ) {
-            print "$full_id\n";
-            $seen{$full_id} = 1;
+        if (! exists $seen{$gene} ) {
+            print "$gene\t$cds\t$locus\n";
+            $seen{$gene} = 1;
         }
     }
     elsif ( $input =~ /\A [>] /xms ) { 
