@@ -33,9 +33,11 @@ foreach my $i (0..13) {
             open $OUTFILE, '>', $outfile;
         }
 
-        elsif ( $input ne 'Genes' ) {
+        # Don't print the 'Genes' subheader; also don't print empty lines!
+        elsif ( ( $input ne 'Genes' ) and ( $input =~ /\S/xms ) ) {
             print $OUTFILE "$input\n";
         }
     }
     close $OUTFILE;
 }
+
