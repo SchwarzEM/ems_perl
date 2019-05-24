@@ -22,7 +22,9 @@ while (my $infile = <>) {
         if (! -r $outdir ) {
             die "Cannot read out: $outdir\n";
         }
-        my $outfile = "$file_stem.filt2.fq";
+        my $outfile = "$file_stem.filt2.fq.gz";
+        my $json    = "$file_stem.filt2.json";
+        my $html    = "$file_stem.filt2.html";
         $outfile    = catfile($outdir, $outfile);
 
         # print header lines only once, at the top of the output script
@@ -31,7 +33,7 @@ while (my $infile = <>) {
         print '#SBATCH --nodes=1', "\n" if $header;
         print '#SBATCH --partition=RM-shared', "\n" if $header;
         print '#SBATCH --time=48:00:00', "\n" if $header;
-        print '#SBATCH --ntasks-per-node=1', "\n" if $header;
+        print '#SBATCH --ntasks-per-node=8', "\n" if $header;
         print '#SBATCH --constraint=EGRESS', "\n" if $header;
         print '#SBATCH --job-name=job_acey_fastp_2019.05.24.01.sh', "\n" if $header;
         print '#SBATCH --mail-type=ALL', "\n" if $header;
@@ -41,7 +43,7 @@ while (my $infile = <>) {
 
         $header = 0;
 
-        print 'fastp --dont_overwrite';
+        print "fastp --thread 8 --dont_overwrite --json $json --html $html ";
         print ' --adapter_fasta $SCRATCH/Acey/2019.05/Acey_RNAseq_data/indiv_seqs/illumina_adaptors_all_2016.10.08.01.all.fa';
         print ' --n_base_limit 0 --max_len1 50';
         print " --in1 $infile --out1 $outfile ;\n";
