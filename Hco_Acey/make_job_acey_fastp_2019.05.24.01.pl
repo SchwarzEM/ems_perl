@@ -36,6 +36,8 @@ while (my $infile = <>) {
         print '#SBATCH --job-name=job_acey_fastp_2019.05.24.01.sh', "\n" if $header;
         print '#SBATCH --mail-type=ALL', "\n" if $header;
         print "cd $start_dir ;\n" if $header;
+        print '. $SCRATCH/anaconda2/etc/profile.d/conda.sh ;', "\n" if $header;
+        print 'conda activate fastp_0.20.0 ;', "\n" if $header;
 
         $header = 0;
 
@@ -50,3 +52,4 @@ while (my $infile = <>) {
     }
 }
 
+print 'conda deactivate ;', "\n" unless $header;
