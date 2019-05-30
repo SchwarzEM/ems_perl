@@ -52,8 +52,8 @@ foreach my $i (1..$limit) {
     # again, make into a full path:
     $output_stem = catfile($workdir, $output_stem);
 
-    my $job1 = "job_iprscan_Acey_2017.08.03.$file_no.sh";
-    my $job2 = "job_iprscan_Acey_2017.08.03.$next_file_no.sh";
+    my $job1 = "job_iprscan_Acey_2019.05.30.$file_no.sh";
+    my $job2 = "job_iprscan_Acey_2019.05.30.$next_file_no.sh";
 
     $job1 = safename($job1);
     $job2 = safename($job2);
