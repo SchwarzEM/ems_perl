@@ -45,8 +45,8 @@ my @lines = ();
 my $i = 0;
 
 while (@comparisons) {
-    my $geno1 = pop @comparisons;
-    my $geno2 = pop @comparisons;
+    my $geno1 = shift @comparisons;
+    my $geno2 = shift @comparisons;
 
     my $line1 = '#' ." $geno1 vs. $geno2:";
     push @lines, $line1;
