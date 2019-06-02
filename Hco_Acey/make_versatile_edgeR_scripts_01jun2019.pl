@@ -36,7 +36,6 @@ if ( $help or (! $working_dir) or (! $input_data ) or (! @genotypes ) ) {
 
 # We need a *non*-redundant genotype list, from which we can make comparison pairs and an input genotype text vector.
 
-my @uniq_genotypes   = uniq(@genotypes);
 my @quoted_genotypes = map { q{"} . $_ . q{"} } @genotypes;
 my $genotype_vector  = join ",", @quoted_genotypes;
 
