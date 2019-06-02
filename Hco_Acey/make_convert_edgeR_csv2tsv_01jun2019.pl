@@ -24,7 +24,7 @@ while (my $input = <>) {
         print 's/\blogCPM\b/', $geno_stem, '.logCPM/g; ';
         print 's/\bPValue\b/', $geno_stem, '.PValue/g; ';
         print 's/\bFDR\b/', $geno_stem, '.FDR/g; ';
-        print "print; ' > $file_stem.tsv.txt ;\n"; 
+        print "print; ' | cut -f 1-2,5 > $file_stem.tsv.txt ;\n"; 
         print "\n";
     }
     else {
