@@ -34,8 +34,6 @@ if ( $help or (! $working_dir) or (! $input_data ) or (! @genotypes ) ) {
         ;
 }
 
-# We need a *non*-redundant genotype list, from which we can make comparison pairs and an input genotype text vector.
-
 my @quoted_genotypes = map { q{"} . $_ . q{"} } @genotypes;
 my $genotype_vector  = join ",", @quoted_genotypes;
 
@@ -50,12 +48,15 @@ while (@comparisons) {
     my $line1 = '#' ." $geno1 vs. $geno2:";
     push @lines, $line1;
 
-    # comp_XXX_vs_YYY <- exactTest(geno_comp, pair=c("XXX","YYY"))
-    my $line2 = 'comp_' . $geno1 . '_vs_' . $geno2 . ' <- exactTest(geno_comp, pair=c' . "\(\"$geno1\",\"$geno2\"\)\)";
+    # comp_XXX_vs_YYY <- exactTest(geno_comp, pair=c("YYY","XXX"))
+    # Note that I am doing it this way so that if XXX has stronger expression, it will get a positive logFC value!
+    # That does not happen if one does things intuitively and submits 'pair=c("XXX","YYY")' to edgeR.
+
+    my $line2 = 'comp_' . $geno1 . '_vs_' . $geno2 . ' <- exactTest(geno_comp, pair=c' . "\(\"$geno2\",\"$geno1\"\)\)";
     push @lines, $line2;
 
-    # mockdeg_XXX_vs_YYY <- topTags(comp_XXX_vs_YYY, n=Inf, p.value=1)
-    my $line3 = 'mockdeg_' 
+    # deg_XXX_vs_YYY <- topTags(comp_XXX_vs_YYY, n=Inf, p.value=1)
+    my $line3 = 'deg_' 
                  . $geno1 
                  . '_vs_' 
                  . $geno2 
@@ -63,8 +64,8 @@ while (@comparisons) {
                  ;
     push @lines, $line3;
 
-    # write.csv(as.data.frame(mockdeg_XXX_vs_YYY), file="XXX.vs.YYY_edgeR_exactTest_all.data_$suffix.csv")
-    my $line4 = 'write.csv(as.data.frame(mockdeg_' 
+    # write.csv(as.data.frame(deg_XXX_vs_YYY), file="XXX.vs.YYY_edgeR_exactTest_all.data_$suffix.csv")
+    my $line4 = 'write.csv(as.data.frame(deg_' 
                 . $geno1 
                 . '_vs_' 
                 . $geno2 
