@@ -25,7 +25,7 @@ while (my $input = <>) {
         print $header if $header;
         $header = q{};
 
-        print "zcat $input | quality_trim_fastq.pl -i - -u 50 > $outfile ;\n";
+        print "zcat $input | quality_trim_fastq.pl -i - -u 50 -o $outfile ;\n";
         print "zcat $input | count_simple_fastq_residues.pl > $in_count ;\n";
         print "mv -i $in_count trimmed_reads ;\n";
         print "cat $outfile | count_simple_fastq_residues.pl > $out_count ;\n";
