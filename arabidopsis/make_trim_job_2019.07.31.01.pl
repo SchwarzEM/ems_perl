@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use autodie;
 
-my $header = '#!/usr/bin' . "\n\n";
+my $header = '#!/bin/bash' . "\n\n";
 
 # sample input: trimmed_reads/10488_6539_90649_HLYCVBGX9_vos2num3_TTAGGC_R1.trim_filt1.fq.gz
 
