@@ -15,8 +15,9 @@ use File::Basename;
 
 my $header = '#!/bin/bash' 
             . "\n\n" 
-            . ". \"/home/bioinformatics/anaconda2/etc/profile.d/conda.sh\" ;\n\n";
-            . "conda activate salmon_0.14.1 ;\n\n";
+            . ". \"/home/bioinformatics/anaconda2/etc/profile.d/conda.sh\" ;\n\n" 
+            . "conda activate salmon_0.14.1 ;\n\n"
+            ;
 
 while (my $input = <>) {
     chomp $input;
