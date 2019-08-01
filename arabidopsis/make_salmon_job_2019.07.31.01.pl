@@ -13,7 +13,10 @@ use File::Basename;
 #        --output [output name] \
 #        --unmatedReads ../filtered_reads1/replicate_3nt.exact_1/Col_WT_rep1.trim_exact_3nt.fq.gz --numBootstraps 200 ;
 
-my $header = '#!/bin/bash' . "\n\n" . "conda activate salmon_0.14.1 ;\n\n";
+my $header = '#!/bin/bash' 
+            . "\n\n" 
+            . ". \"/home/bioinformatics/anaconda2/etc/profile.d/conda.sh\" ;\n\n";
+            . "conda activate salmon_0.14.1 ;\n\n";
 
 while (my $input = <>) {
     chomp $input;
