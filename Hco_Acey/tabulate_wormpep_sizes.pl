@@ -18,7 +18,7 @@ GetOptions ( 'proteome=s' => \$proteome,
              'help'       => \$help, );
 
 if ($help or (! $proteome) ) { 
-    die "Format: tabulate_augprot_sizes.pl\n",
+    die "Format: tabulate_wormpep_sizes.pl\n",
         "    --proteome|-p [protein file; gets gene names, transcript names, and protein lengths]\n",
         "    --max|-m      [instead of human-readable range, give number of aa for largest isoform only]\n",
         "    --help|-h     [prints this message]\n",
