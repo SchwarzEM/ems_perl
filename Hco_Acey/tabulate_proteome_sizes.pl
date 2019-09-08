@@ -13,15 +13,35 @@ my $data_ref;
 my $max;
 
 my %ok_formats = (
-    'augustus'    => 'aug',
-    'aug'         => 'aug',
-    'ensembl'     => 'ens',
-    'ens'         => 'ens',
-    'ra'          => 'ra',
-    'arabidopsis' => 'tair',
-    'tair'        => 'tair',
-    'wormbase'    => 'wb',
-    'wb'          => 'wb',
+    arabidopsis   => 'tair',
+    tair          => 'tair',
+
+    augustus      => 'aug',
+    aug           => 'aug',
+
+    augustus_like => 'aug_like', 
+    aug_like      => 'aug_like',
+
+    column3       => 'col3',
+    col3          => 'col3',
+
+    ensembl       => 'ens',
+    ens           => 'ens',
+
+    flybase       => 'flybase',
+    fly           => 'flybase',
+
+    maker         => 'maker',
+    mak           => 'maker',
+
+    parasite      => 'par',
+    par           => 'par',
+
+    parasite_old  => 'par_old',
+    par_old       => 'par_old',
+
+    wormbase      => 'wb',
+    wb            => 'wb',
 );
 
 my $help;
@@ -34,11 +54,16 @@ GetOptions ( 'format=s'   => \$format,
 if ($help or (! $proteome) or (! exists $ok_formats{$format}) ) { 
     die "Format: tabulate_proteome_sizes.pl\n",
         "    --format|-f   [proteome header format -- acceptable format names include:\n",
+        "                  'arabidopsis' or 'tair'\n",
+        "                  'augustus' or 'aug'\n",
+        "                  'augustus_like' or 'aug_like'\n",
+        "                  'column3' or 'col3'\n",
         "                  'ensembl' or 'ens'\n",
-       	"                  'wormbase' or 'wb'\n",
-       	"                  'augustus' or 'aug'\n",
-       	"                  'arabidopsis' or 'tair'\n", 
-       	"               or 'ra' for -RA-suffixed]\n",
+        "                  'flybase' or 'fly'\n",
+        "                  'maker' or 'mak'\n",
+        "                  'parasite' or 'par'\n",
+        "                  'parasite_old' or 'par_old'\n",
+        "               or 'wormbase' or 'wb']\n",
         "    --proteome|-p [protein file; gets gene names, transcript names, and protein lengths]\n",
         "    --max|-m      [instead of human-readable range, give number of aa for largest isoform only]\n",
         "    --help|-h     [prints this message]\n",
@@ -55,11 +80,31 @@ while (my $input = <$PROT>) {
             $tx   = $1;
             $gene = $2;
         }
+        elsif ( ( $format eq 'aug_like' ) and ( $input =~ /\A > ((\S+)\.t\d+) \z/xms ) ) {
+            $tx   = $1;
+            $gene = $2;
+        }
+        elsif ( ( $format eq 'col3' ) and ( $input =~ /\A > (\S+) \s+ \S+ \s+ (\S+) \s* \z/xms ) ) {
+            $tx   = $1;
+            $gene = $2;
+        }
 	elsif ( ( $format eq 'ens' ) and ( $input =~ /\A > (\S+) \s .* gene:(\S+) /xms ) ) {
             $tx   = $1;
             $gene = $2;
         }
-	elsif ( ( $format eq 'ra' ) and ( $input =~ /\A > ((\S+)\-R[A-Z]) \s /xms ) ) {
+        elsif ( ( $format eq 'maker' ) and ( $input =~ /\A > ( (\S+) [-]mRNA[-]\d+) \s /xms ) ) {
+            $tx   = $1;
+            $gene = $2;
+        }
+        elsif ( ( $format eq 'par' ) and ( $input =~ /\A > (\S+) \b .* \s gene=(\S+) \s /xms ) ) {
+            $tx   = $1;
+            $gene = $2;
+        }
+        elsif ( ( $format eq 'par_old' ) and ( $input =~ /\A > (\S+) \b .* \s gene_id=(\S+) \s /xms ) ) {
+            $tx   = $1;
+            $gene = $2;
+        }
+	elsif ( ( $format eq 'flybase' ) and ( $input =~ /\A > ((\S+)\-R[A-Z]) \s /xms ) ) {
             $tx   = $1;
             $gene = $2;
         }
