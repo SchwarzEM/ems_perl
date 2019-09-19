@@ -80,7 +80,7 @@ foreach my $tx1 (@txs) {
     my $rds_tag2 = $data_ref->{'tx'}->{$tx1}->{'tag'}->{$tag2}->{'reads'};
 
     if ( ( $tpm_tag1 > 0 ) or ( $tpm_tag2 > 0 ) ) {
-        print "$tx1\t$tpm_tag1\t$tpm_tag2\t$rds_tag1\t$rds_tag1\n";
+        print "$tx1\t$tpm_tag1\t$tpm_tag2\t$rds_tag1\t$rds_tag2\n";
     }
 
     if ( ( $tpm_tag1 > 0 ) and ( $tpm_tag2 > 0 ) ) {
@@ -98,11 +98,12 @@ $data_ref->{'both_txs'} = commify($data_ref->{'both_txs'});
 $data_ref->{'tag1_txs'} = commify($data_ref->{'tag1_txs'});
 $data_ref->{'tag2_txs'} = commify($data_ref->{'tag2_txs'});
 
-print "\n";
-print "Total $tag1/$tag2 txs: $data_ref->{'both_txs'}\n";
-print "Total $tag1 only txs: $data_ref->{'tag1_txs'}\n";
-print "Total $tag2 only txs: $data_ref->{'tag2_txs'}\n";
-print "\n";
+# Print to STDERR so that this doesn't go into the main TSV output.
+warn "\n";
+warn "Total $tag1/$tag2 txs: $data_ref->{'both_txs'}\n";
+warn "Total $tag1 only txs: $data_ref->{'tag1_txs'}\n";
+warn "Total $tag2 only txs: $data_ref->{'tag2_txs'}\n";
+warn "\n";
 
 # Source -- Perl Cookbook 2.16, p. 84:
 sub commify { 
