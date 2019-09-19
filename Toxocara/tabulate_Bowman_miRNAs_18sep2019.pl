@@ -4,11 +4,15 @@ use strict;
 use warnings;
 use autodie;
 
+use List::MoreUtils qw(uniq);
+
 my $tag1    = q{};
 my $infile1 = q{};
 
 my $tag2    = q{};
 my $infile2 = q{};
+
+my @txs     = ();
 
 my $data_ref;
 
@@ -45,6 +49,7 @@ while (my $input = <$INFILE1>) {
         my $reads = $3;
         $data_ref->{'tx'}->{$tx}->{'tag'}->{$tag1}->{'TPM'}   = $tpm;
        	$data_ref->{'tx'}->{$tx}->{'tag'}->{$tag1}->{'reads'} = $reads;
+        push @txs, $tx;
     }
     elsif ( $input !~ /\AName/xms ) {
         die "In input 1 file $infile1, cannot format: $input\n";
@@ -61,6 +66,7 @@ while (my $input = <$INFILE2>) {
         my $reads = $3;
        	$data_ref->{'tx'}->{$tx}->{'tag'}->{$tag2}->{'TPM'}   = $tpm;
         $data_ref->{'tx'}->{$tx}->{'tag'}->{$tag2}->{'reads'} = $reads;
+        push @txs, $tx;
     }
     elsif ( $input !~ /\AName/xms ) {
 	die "In input 1 file $infile2, cannot format: $input\n";
@@ -68,9 +74,11 @@ while (my $input = <$INFILE2>) {
 }
 close $INFILE2;
 
+@txs = sort @txs;
+@txs = uniq(@txs);
+
 my $header = "Transcript\tTPM.$tag1\tTPM.$tag2\treads.$tag1\treads.$tag2\n";
 
-my @txs = sort keys %{ $data_ref->{'tx'} };
 foreach my $tx1 (@txs) {
     print $header if $header;
     $header = q{};
