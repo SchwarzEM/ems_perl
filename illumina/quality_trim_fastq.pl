@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
-# quality_trim_fastq.pl -- Erich Schwarz <ems394@cornell.edu>, 10/31/2012.
-# Purpose:  Take four lines at a time.  Print only, as chosen: all but last (unreliable) residue; residues up to maximum length; residues up to last non-N; residues >= quality threshold; residues >= minimum length.  NOTE: requires the user to specify the offset X for Phred+X ; X was 64 for Illumina reads until <= 10/2011 but then became 33; at some point in the more distant past, it was something else (neither 64 nor 33...)
+# quality_trim_fastq.pl -- Erich Schwarz <ems394@cornell.edu>, 11/19/2019.
+# Purpose:  Take four lines at a time.  Print only, as chosen: all but last (unreliable) residue; residues up to maximum length; residues up to last non-N; residues >= quality threshold; residues >= minimum length.  NOTE: no longer *requires* the user to specify the offset X for Phred+X -- assumes default 33 ; X was 64 for Illumina reads until <= 10/2011 but then became 33; at some point in the more distant past, it was something else (neither 64 nor 33...)
 
 use strict;
 use warnings;
@@ -18,6 +18,9 @@ my %opts   = ();
 
 # Default is to allow any amount of trimming, but this can lead to vacant sequence lines!
 $opts{'minimum'} = 0;
+
+# Default quality offset for FastQ is 33; can be overridden by user, for dealing with old / weird data.
+$opts{'quality'} = 33;
 
 GetOptions(
     "input=s"     => \$opts{'input'},
@@ -52,7 +55,6 @@ if ( $opts{'help'} ) {
     print "\n";
     print "       -i|--input      <in>       input file name (fastq); opt. stream input via '-'\n";
     print "       -o|--output     <out>      output file name (fastq), required\n";
-    print "       -q|--quality    <integer>  quality score offset for FASTQ: in Illumina, was 64 (for Phred+64) for 2009-2011; shifted to 33 (for Phred+33) by Oct. 2011; required\n";
     print "\n";
     print "       [at least one of the following arguments is required]\n";
     print "       -e|--end_trim   <integer>  1. Before anything else, trim this many residues off end (typically, 1 last unreliable residue)\n";
@@ -60,6 +62,9 @@ if ( $opts{'help'} ) {
     print "       -n|--no_Ns                 3. Trim all *starting* N residues, and then all 3' residues to last non-N\n";
     print "       -t|--threshold  <integer>  4. Quality threshold - trim all 3'-ward residues below this score\n";
     print "       -m|--minimum    <integer>  5. Minimum residue length - after all other filters, censor any reads trimmed below this length\n";
+    print "\n";
+    print "       [the following value, if not specified by user, is 33 (Phred+33) by default]\n";
+    print "       -q|--quality    <integer>  quality score offset for FASTQ: for Illumina, 33 (Phred+33) in Oct. 2011+; 64 (Phred+64) in 2009-2011\n";
     print "\n";
     print "       [the following option is allowed, but not recommended]\n";
     print "       -c|--chastity              6. Override the automatic filtering out of any read with ", '1:Y:\d or 2:Y:\d', " in the header\n", ;
