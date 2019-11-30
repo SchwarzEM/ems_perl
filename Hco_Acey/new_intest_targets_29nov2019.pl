@@ -13,6 +13,7 @@ while (my $input = <>) {
 
     my $int_vs_non_int_logFC = q{};
     my @int_TPMs             = ();
+    my $L3i_TPM              = q{};
     my $int_vs_non_int_FDR   = q{};
     my $hum_perc_id          = q{};
     my $ofind_summary        = q{};
@@ -26,6 +27,7 @@ while (my $input = <>) {
              and ( exists $data[31] )
              and ( exists $data[32] )
              and ( exists $data[33] )
+             and ( exists $data[24] )
        	     and ( exists $data[44] )
        	     and ( exists $data[23] )
        	     and ( exists $data[16] )
@@ -33,6 +35,7 @@ while (my $input = <>) {
 
         $int_vs_non_int_logFC = $data[43];
         @int_TPMs             = @data[31..33];
+        $L3i_TPM              = $data[24];
         $int_vs_non_int_FDR   = $data[44];
         $hum_perc_id          = $data[23];
         $ofind_summary        = $data[16];
@@ -51,6 +54,8 @@ while (my $input = <>) {
                  and ( $int_vs_non_int_FDR <= 0.05 )
 
               and ( $max_int_TPM =~ /\S+/xms ) and ( $max_int_TPM >= 10 )
+
+              and ( $L3i_TPM =~ /\S+/xms ) and ( $L3i_TPM < 50 )
 
               and ( $hum_perc_id =~ /\S+/xms ) and ( $hum_perc_id < 90 )
 
