@@ -58,6 +58,7 @@ while (my $input = <>) {
               and ( ( $phobius =~ /SigP[+]TM\(1x\)/xms ) and ( $phobius !~ /SigP;/xms ) )
            ) {
             if ( $input =~ /Immunoregulated_R01/ ) {
+                $input =~ s/Immunoregulated_R01/Immunoregulated_R01_prev/g;
                 print "$input\n";
             }
             else {

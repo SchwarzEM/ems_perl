@@ -58,16 +58,13 @@ while (my $input = <>) {
               and ( ( $phobius =~ /\ASigP\z/xms ) or ( $phobius =~ /\bSigP;/xms ) ) 
            ) {
             if ( $input =~ /Immunoregulated_R01/ ) {
+                $input =~ s/Immunoregulated_R01/Immunoregulated_R01_prev/g;
                 print "$input\n";
             }
             else {
                 $input =~ s/\A(\S+\t[^\t]*\t[^\t]*\t)(\t.+)\z/$1Immunoregulated_hookworm-specific$2/;
                 print "$input\n";
             }
-        }
-        elsif ( $input =~ /Immunoregulated_R01/ ) {
-            $input =~ s/Immunoregulated_R01/Immunoregulated_R01_prev/g;
-            print "$input\n";
         }
     }
 }

@@ -66,6 +66,7 @@ while (my $input = <>) {
               and ( ( $phobius =~ /SigP[+]TM\(1x\)/xms ) and ( $phobius !~ /SigP;/xms ) )
            ) {
             if ( $input =~ /Intestinal_R01/ ) {
+                $input =~ s/Intestinal_R01/Intestinal_R01_prev/g;
                 print "$input\n";
             }
             else {
