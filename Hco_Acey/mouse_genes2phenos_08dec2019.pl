@@ -44,20 +44,12 @@ while ( my $input = <$PHENO_ANNOTS> ) {
         my $pheno_acc_txt = $2;
 
         my @pheno_accs      = split /,/, $pheno_acc_txt;
-        my @pheno_annots    = ();
-        my $pheno_annot_txt = q{};
 
         foreach my $pheno_acc (@pheno_accs) {
             my $pheno_desc = $id2desc{$pheno_acc};
             $pheno_desc = "$pheno_desc [$pheno_acc]";
-            push @pheno_annots, $pheno_desc;
+            $data_ref->{'gene'}->{$id}->{'pheno'}->{$pheno_desc} = 1;
         }
-        $pheno_annot_txt = join '; ', @pheno_annots;
-
-        print "$header\n" if $header;
-        $header = q{};
-
-        print "$id\t$pheno_annot_txt\n";
     }
     else {
         die "From $pheno_annots, cannot parse: $input\n";
@@ -65,17 +57,15 @@ while ( my $input = <$PHENO_ANNOTS> ) {
 }
 close $PHENO_ANNOTS;
 
+my @genes = sort keys %{ $data_ref->{'gene'} };
 
-
-
-my @ens_ids = sort keys %{ $data_ref->{'ens_id'} };
-foreach my $ens_id (@ens_ids) {
-    my $symbol = $data_ref->{'ens_id'}->{$ens_id}->{'symbol'};
-    my $desc   = $data_ref->{'ens_id'}->{$ens_id}->{'desc'};
+foreach my $gene (@genes) {
+    my @pheno_descs = sort keys %{ $data_ref->{'gene'}->{$gene}->{'pheno'} };
+    my $pheno_desc_text = join '; ', @pheno_descs;
 
     print "$header\n" if $header;
     $header = q{};
-    print "$ens_id\t$symbol\t$desc\n";
-}
 
+    print "$gene\t$pheno_desc_text\n";
+}
 
