@@ -70,10 +70,6 @@ while (my $input = <>) {
                 print "$input\n";
             }
         }
-        elsif ( $input =~ /Immunoregulated_R01/ ) {
-            $input =~ s/Immunoregulated_R01/Immunoregulated_R01_prev/g;
-            print "$input\n";
-        }
     }
 }
 
