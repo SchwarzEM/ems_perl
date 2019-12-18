@@ -24,7 +24,7 @@ while (my $input = <>) {
         print "$input\n";
     }
 
-    elsif (      ( exists $data[44] )
+    elsif (      ( exists $data[45] )
              and ( exists $data[33] )
              and ( exists $data[34] )
              and ( exists $data[35] )
@@ -35,7 +35,7 @@ while (my $input = <>) {
              and ( exists $data[19] )
        	     and ( exists $data[11] )) {
 
-        $int_vs_non_int_logFC = $data[44];      # intestines_19dpi_noDEX.vs.non.intestines_19dpi_noDEX.logFC [46]
+        $int_vs_non_int_logFC = $data[45];      # intestines_19dpi_noDEX.vs.non.intestines_19dpi_noDEX.logFC [46]
         @int_TPMs             = @data[33..35];  # intestines_19dpi_noDEX_biorep_1.TPM [34], 
                                                 #     intestines_19dpi_noDEX_biorep_2.TPM [35], intestines_19dpi_noDEX_biorep_3.TPM [36]
         $L3i_TPM              = $data[26];      # L3i.TPM [27]
@@ -78,10 +78,6 @@ while (my $input = <>) {
                 $input =~ s/\A(\S+\t[^\t]*\t)(\t.+)\z/$1Intestinal_R01_new$2/;
                 print "$input\n";
             }
-        }
-        elsif ( $input =~ /Intestinal_R01/ ) {
-            $input =~ s/Intestinal_R01/Intestinal_R01_prev/g;
-            print "$input\n";
         }
     }
 }
