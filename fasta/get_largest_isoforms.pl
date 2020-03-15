@@ -26,6 +26,8 @@ my %ok_headers = ( wormbase => 'wormbase',
                    flybase  => 'flybase',
                    fly      => 'flybase',
 
+                   fly_old  => 'flybase_old',
+
                    maker    => 'maker',
                    mak      => 'maker', 
 
@@ -57,6 +59,7 @@ if ( $help or (! @infiles) ) {
         "                   'aug_like'\n",
         "                   'ensembl|ens'\n",
         "                   'flybase|fly'\n",
+        "                   'fly_old'\n",
         "                   'maker|mak'\n",
         "                   'parasite|par'\n",
         "                   'par_old'\n",
@@ -136,7 +139,14 @@ foreach my $infile (@infiles) {
                 $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
             }
 
-            elsif ( ( $header_type eq 'flybase' ) and ( $input =~ /\A > ( ( (\S+) [-]R[A-Z] ) \b .*) \z/xms ) ) {
+            elsif ( ( $header_type eq 'flybase' ) and ( $input =~ /\A > ( (\S+) .* parent=(FBgn\d+) .+ ) \z/xms ) ) {
+                $header  = $1;
+                $protein = $2;
+                $gene    = $3;
+                $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
+            }
+
+            elsif ( ( $header_type eq 'flybase_old' ) and ( $input =~ /\A > ( ( (\S+) [-]R[A-Z] ) \b .*) \z/xms ) ) {
                 $header  = $1;
                 $protein = $2;
                 $gene    = $3;
