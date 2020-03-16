@@ -71,7 +71,7 @@ if ( $help or (! @infiles) ) {
 
 if ($header_type) { 
     if (! exists $ok_headers{$header_type} ) { 
-        die "Header type must be 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', 'maker|mak', 'parasite|par', 'par_old', or 'column3|col3', not \"$header_type\"\n";
+        die "Header type must be 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', 'fly_old', 'maker|mak', 'parasite|par', 'par_old', or 'column3|col3', not \"$header_type\"\n";
     }
     else { 
         # Map to full names of header types, if abbreviated:
