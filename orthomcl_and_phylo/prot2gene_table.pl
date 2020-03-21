@@ -111,61 +111,61 @@ foreach my $infile (@infiles) {
             # We just need to get $header, $protein, and $gene reliably from the header lines *somehow*.
             # So this part can be expanded easily; after this step, the rest of the script is changeless.
 
-            if ( ( $header_type eq 'wormbase' ) and ( $input =~ /\A > ( (\S+) \s .* (WBGene\d+) .*) \z/xms ) ) { 
+            if ( ( $header_type eq 'wormbase' ) and ( $input =~ /\A > (\S+) \s .* (WBGene\d+) .* \z/xms ) ) { 
                 $protein = $1;
                 $gene    = $2;
                 $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
             }
 
-            elsif ( ( $header_type eq 'ensembl' ) and ( $input =~ /\A > ( (\S+) \b .* \s gene[:] (\S+) \b .* ) \z/xms ) ) {
+            elsif ( ( $header_type eq 'ensembl' ) and ( $input =~ /\A > (\S+) \b .* \s gene[:] (\S+) \b .* \z/xms ) ) {
                 $protein = $1;
                 $gene    = $2;
                 $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
             }
 
-            elsif ( ( $header_type eq 'parasite' ) and ( $input =~ /\A > ( (\S+) \b .* \s gene= (\S+) \b .* ) \z/xms ) ) {
+            elsif ( ( $header_type eq 'parasite' ) and ( $input =~ /\A > (\S+) \b .* \s gene= (\S+) \b .* \z/xms ) ) {
                 $protein = $1;
                 $gene    = $2;
                 $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
             }
 
-            elsif ( ( $header_type eq 'parasite_old' ) and ( $input =~ /\A > ( (\S+) \b .* \s gene_id= (\S+) \b .* ) \z/xms ) ) {
+            elsif ( ( $header_type eq 'parasite_old' ) and ( $input =~ /\A > (\S+) \b .* \s gene_id= (\S+) \b .* \z/xms ) ) {
                 $protein = $1;
                 $gene    = $2;
                 $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
             }
 
-            elsif ( ( $header_type eq 'augustus' ) and ( $input =~ /\A > ( ( (\S+ \.g\d+) \.t\d+ ) \b .* ) \z/xms ) ) {
+            elsif ( ( $header_type eq 'augustus' ) and ( $input =~ /\A > ( (\S+ \.g\d+) \.t\d+ ) \b .* \z/xms ) ) {
                 $protein = $1;
                 $gene    = $2;
                 $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
             }
 
-            elsif ( ( $header_type eq 'augustus_like') and ( $input =~ /\A > ( ( (\S+) \.t\d+ ) \b .* ) \z/xms ) ) {
+            elsif ( ( $header_type eq 'augustus_like') and ( $input =~ /\A > ( (\S+) \.t\d+ ) \b .* \z/xms ) ) {
                 $protein = $1;
                 $gene    = $2;
                 $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
             }
 
-            elsif ( ( $header_type eq 'flybase' ) and ( $input =~ /\A > ( (\S+) .* parent=(FBgn\d+) .+ ) \z/xms ) ) {
+            elsif ( ( $header_type eq 'flybase' ) and ( $input =~ /\A > (\S+) .* parent=(FBgn\d+) .+ \z/xms ) ) {
                 $protein = $1;
                 $gene    = $2;
                 $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
             }
 
-            elsif ( ( $header_type eq 'flybase_old' ) and ( $input =~ /\A > ( ( (\S+) [-]R[A-Z] ) \b .*) \z/xms ) ) {
+            elsif ( ( $header_type eq 'flybase_old' ) and ( $input =~ /\A > ( (\S+) [-]R[A-Z] ) \b .* \z/xms ) ) {
                 $protein = $1;
                 $gene    = $2;
                 $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
             }
 
-            elsif ( ( $header_type eq 'maker' ) and ( $input =~ /\A > ( ( (\S+) [-]mRNA[-]\d+) \b .*) \z/xms ) ) {
+            elsif ( ( $header_type eq 'maker' ) and ( $input =~ /\A > ( (\S+) [-]mRNA[-]\d+) \b .* \z/xms ) ) {
                 $protein = $1;
                 $gene    = $2;
                 $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
             }
 
-            elsif ( ( $header_type eq 'column3' ) and ( $input =~ /\A > ( (\S+) \s+ \S+ \s+ (\S+) \s* ) \z/xms ) ) {
+            elsif ( ( $header_type eq 'column3' ) and ( $input =~ /\A > (\S+) \s+ \S+ \s+ (\S+) \s* \z/xms ) ) {
                 $protein = $1;
                 $gene    = $2;
                 $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
