@@ -1,14 +1,11 @@
 #!/usr/bin/env perl
 
-# prot2gene_table.pl -- Erich Schwarz <emsch@its.caltech.edu>, 2/2/2010.
-# Purpose: given a set of proteome files, tabulate CDSes-to-genes, with none in >=2 proteomes; prerequisite for prot2gene_omcl.pl.
-# 
-# Note: this maps CDSes to unique genes; if it mapped *proteins*, the mapping could not be unique
-#     because it is entirely possible for a single polypeptide to be encoded by >2 genes.
+# prot2gene_table.pl -- Erich Schwarz <ems394@cornell.edu>, 3/21/2020.
+# Purpose: given a set of proteome files, tabulate CDSes-to-genes, with none in >=2 proteomes, and with optional third column with a taxon name; prerequisite for prot2gene_omcl.pl.
 
-use strict;
-use warnings;
-use Getopt::Long;
+# Note 1: this uses syntax taken straight form get_largest_isoforms.pl -- Erich Schwarz <ems394@cornell.edu>, 7/29/2018. 
+# Note 2: this maps CDSes to unique genes; if it mapped *proteins*, the mapping could not be unique
+#     because it is entirely possible for a single polypeptide to be encoded by >2 genes.
 
 # Import proteome files by '--argument [file list]'.
 #     Each argument groups proteomes; each group is then assigned 
@@ -16,106 +13,182 @@ use Getopt::Long;
 #     rules, as needed ad-hoc, within a stable frame of general, 
 #     unchanging code.
 
-my @wormgene = ();
-my @augustus = ();
-my @gene     = ();
-my @simple   = ();
-my @two_col  = ();
-my @other    = ();
-
-my $parse_wormgene = '\A > (\S+) \s .+ (WBGene\d+)';        # Official WB headers.
-my $parse_augustus = '\A > ( (\S+) \. [t]{0,1} \d+)';       # AUGUSTUS-like headers (">gene.t1", ">gene.t2" or ">gene.1", ">gene.2").
-my $parse_gene     = '\A > (\S+) \s .* \b [gG]ene: (\S+)';  # 'gene:' headers  (">CDS [...] [gG]ene:[gene_name]").
-my $parse_simple   = '\A > (\S+) \s+ (\S+)';                # Simple headers,  (">CDS  gene").
-my $parse_two_col  = '\A > (\S+) \s+ \S+ \s+ (\S+)';        # A new WormBase vogue in 3/2012 (">PROTEIN  [TRANSCRIPT?]  GENE").
-my $parse_other    = '\A > ((\S+))';                        # Fall-back: each CDS name *is* the gene name.
+use strict;
+use warnings;
+use autodie;
+use Getopt::Long;
 
 my $data_ref;
-my %cds2gene = ();
+
+my @infiles     = ();
+my $header_type = q{};
+
+my %ok_headers = ( wormbase => 'wormbase',
+                   wb       => 'wormbase',
+
+                   augustus => 'augustus',
+                   aug      => 'augustus',
+
+                   aug_like => 'augustus_like',
+
+                   ensembl  => 'ensembl',
+                   ens      => 'ensembl',
+
+                   flybase  => 'flybase',
+                   fly      => 'flybase',
+
+                   fly_old  => 'flybase_old',
+
+                   maker    => 'maker',
+                   mak      => 'maker', 
+
+                   parasite => 'parasite',
+                   par      => 'parasite',
+
+                   par_old  => 'parasite_old',
+
+                   column3  => 'column3',
+                   col3     => 'column3',
+);
+
+my $header  = q{};
+my $protein = q{};
+my $gene    = q{};
+my $species = q{};
 
 my $help;
 
-GetOptions ( 'wormgene:s{,}' => \@wormgene,
-             'augustus:s{,}' => \@augustus,
-             'gene:s{,}'     => \@gene,
-             'simple:s{,}'   => \@simple,
-             'two_col:s{,}'  => \@two_col,
-             'other:s{,}'    => \@other,
-             'help'          => \$help,     );
+GetOptions ( 'infiles=s{,}' => \@infiles,
+             'type=s'       => \$header_type,
+             'species=s'    => \$species,
+             'help'         => \$help,   );
 
-my @infiles = (@wormgene, @augustus, @gene, @simple, @two_col, @other);
-
-if ( ($help) or (! @infiles) ) { 
+if ( $help or (! @infiles) ) { 
     die "Format: prot2gene_table.pl\n",
-        "            --wormgene|-w (WBGene names)\n",
-        "            --augustus|-a (AUGUSTUS-like, \"gene.t1+\" or \"gene.1+\")\n",
-        "            --gene|-g     (\">CDS [...] [gG]ene:[gene_name]\")\n",
-        "            --simple|-s   (\">CDS  [gene_name]\")\n",
-        "            --two_col|-t  (\">CDS [cruft] [gene_name]\")\n",
-        "            --other|-o    (\">CDS\" == gene name)\n",
+        "    --infile|-i   <input stream/files>\n",
+        "    --type|-t     [header types:\n",
+        "                   'wormbase|wb'\n",
+        "                   'augustus|aug'\n",
+        "                   'aug_like'\n",
+        "                   'ensembl|ens'\n",
+        "                   'flybase|fly'\n",
+        "                   'fly_old'\n",
+        "                   'maker|mak'\n",
+        "                   'parasite|par'\n",
+        "                   'par_old'\n",
+        "                or 'column3|col3';\n", 
+        "                   default is 'wormbase']\n",
+        "    --species|-s  [optional: provide a taxon name, to be printed as a third column]\n",
+        "    --help|-h     [print this message]\n",
         ;
 }
 
-foreach my $proteome (@wormgene) { 
-    $data_ref->{'proteome'}->{$proteome}->{'rule'} = $parse_wormgene;
-}
-foreach my $proteome (@augustus) { 
-    $data_ref->{'proteome'}->{$proteome}->{'rule'} = $parse_augustus;
-}
-foreach my $proteome (@gene) {
-    $data_ref->{'proteome'}->{$proteome}->{'rule'} = $parse_gene;
-}
-foreach my $proteome (@simple) {
-    $data_ref->{'proteome'}->{$proteome}->{'rule'} = $parse_simple;
-}
-foreach my $proteome (@two_col) { 
-    $data_ref->{'proteome'}->{$proteome}->{'rule'} = $parse_two_col;
-}
-foreach my $proteome (@other) { 
-    $data_ref->{'proteome'}->{$proteome}->{'rule'} = $parse_other;
+if ($header_type) { 
+    if (! exists $ok_headers{$header_type} ) { 
+        die "Header type must be 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', 'fly_old', 'maker|mak', 'parasite|par', 'par_old', or 'column3|col3', not \"$header_type\"\n";
+    }
+    else { 
+        # Map to full names of header types, if abbreviated:
+        $header_type = $ok_headers{$header_type};
+    }
 }
 
-foreach my $input_file (@infiles) { 
-    my $rule = $data_ref->{'proteome'}->{$input_file}->{'rule'};
-    open my $INFILE, '<', $input_file or die "Can't open input proteome file $input_file!\n";
-    my %seen = ();
-    while (my $input = <$INFILE>) { 
+foreach my $infile (@infiles) { 
+    my $INPUT_FILE;
+    if ($infile eq '-') {
+        # Special case: get the stdin handle
+        $INPUT_FILE = *STDIN{IO};
+    }
+    else {
+        # Standard case: open the file
+        open $INPUT_FILE, '<', $infile or die "Can't open input file $infile. $!\n";
+    }
+    while (my $input = <$INPUT_FILE>) { 
         chomp $input;
+        if ( $input =~ /\A > /xms ) { 
 
-        # Only attempt to parse header lines.
-        #    (If using non-FASTA-headers as input, must generalize this...)
-        if ( $input =~ /\A >/xms ) { 
+            # As long as protein-gene relations can be reliably extracted from headers with regexes, we can easily add all the rules we want.
+            # We just need to get $header, $protein, and $gene reliably from the header lines *somehow*.
+            # So this part can be expanded easily; after this step, the rest of the script is changeless.
 
-            # Enforce that the parsing rule always works (crucial!):
-            if ( $input !~ /$rule/xms ) {
-                warn "Input file $input_file is supposed to follow format:\n";
-                warn "    ", $rule, "\n";
-                die "Aberrant input: $input\n";
+            if ( ( $header_type eq 'wormbase' ) and ( $input =~ /\A > ( (\S+) \s .* (WBGene\d+) .*) \z/xms ) ) { 
+                $protein = $1;
+                $gene    = $2;
+                $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
             }
 
-            # Use validated rule to parse the FASTA header data:
-            if ( $input =~ /$rule/xms ) { 
-                my $cds  = $1;
-                my $gene = $2;
+            elsif ( ( $header_type eq 'ensembl' ) and ( $input =~ /\A > ( (\S+) \b .* \s gene[:] (\S+) \b .* ) \z/xms ) ) {
+                $protein = $1;
+                $gene    = $2;
+                $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
+            }
 
-                # Enforce only one CDS per input file:
-                if (exists $seen{$cds} ) { 
-                    die "CDS $cds occurs twice in input file $input_file!\n";
-                }
-                $seen{$cds} = 1;
+            elsif ( ( $header_type eq 'parasite' ) and ( $input =~ /\A > ( (\S+) \b .* \s gene= (\S+) \b .* ) \z/xms ) ) {
+                $protein = $1;
+                $gene    = $2;
+                $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
+            }
 
-                # Enforce unique CDS-to-gene throughout total of all input files:
-                if ( ( exists $cds2gene{$cds} ) and ( $cds ne $cds2gene{$cds} ) ) {
-                    die "CDS $cds is linked to both $cds2gene{$cds} and $gene!\n";
-                }
-                $cds2gene{$cds} = $gene;
+            elsif ( ( $header_type eq 'parasite_old' ) and ( $input =~ /\A > ( (\S+) \b .* \s gene_id= (\S+) \b .* ) \z/xms ) ) {
+                $protein = $1;
+                $gene    = $2;
+                $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
+            }
+
+            elsif ( ( $header_type eq 'augustus' ) and ( $input =~ /\A > ( ( (\S+ \.g\d+) \.t\d+ ) \b .* ) \z/xms ) ) {
+                $protein = $1;
+                $gene    = $2;
+                $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
+            }
+
+            elsif ( ( $header_type eq 'augustus_like') and ( $input =~ /\A > ( ( (\S+) \.t\d+ ) \b .* ) \z/xms ) ) {
+                $protein = $1;
+                $gene    = $2;
+                $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
+            }
+
+            elsif ( ( $header_type eq 'flybase' ) and ( $input =~ /\A > ( (\S+) .* parent=(FBgn\d+) .+ ) \z/xms ) ) {
+                $protein = $1;
+                $gene    = $2;
+                $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
+            }
+
+            elsif ( ( $header_type eq 'flybase_old' ) and ( $input =~ /\A > ( ( (\S+) [-]R[A-Z] ) \b .*) \z/xms ) ) {
+                $protein = $1;
+                $gene    = $2;
+                $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
+            }
+
+            elsif ( ( $header_type eq 'maker' ) and ( $input =~ /\A > ( ( (\S+) [-]mRNA[-]\d+) \b .*) \z/xms ) ) {
+                $protein = $1;
+                $gene    = $2;
+                $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
+            }
+
+            elsif ( ( $header_type eq 'column3' ) and ( $input =~ /\A > ( (\S+) \s+ \S+ \s+ (\S+) \s* ) \z/xms ) ) {
+                $protein = $1;
+                $gene    = $2;
+                $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
+            }
+
+            else { 
+                die "Can't parse header: $input\n";
             }
         }
     }
-    close $INFILE or die "Can't close filehandle to proteome file $input_file!\n";
+    close $INPUT_FILE or die "Can't close filehandle to input file $infile. $!\n";
 }
 
-foreach my $cds (sort keys %cds2gene) { 
-    print "$cds\t$cds2gene{$cds}\n";
+# List all the proteins observed in the proteome:
+my @proteins = sort keys %{ $data_ref->{'protein'} };
+
+# Print a table with each protein, its gene, and optionally its species/taxon:
+foreach my $protein1 (@proteins) {
+    my $gene1 = $data_ref->{'protein'}->{$protein1}->{'gene'} ;
+    print "$protein1\t$gene1";
+    if ( $species ) {
+        print "\t$species";
+    }
+    print "\n";
 }
 
