@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# strict_vs_exp_omcls.pl -- Erich Schwarz <emsch@its.caltech.edu>, 3/15/2013; minor tweak on 1/31/2017 to allow (OrthoMCL-reformatted) OrthoFinder input.
+# strict_vs_exp_omcls.pl -- Erich Schwarz <ems394@cornell.edu>, 3/15/2013; minor tweak on 1/31/2017 to allow (OrthoMCL-reformatted) OrthoFinder input; another tweak on 3/23/2020 to allow Drosophila gene names like "l(3)wacko".
 # Purpose: given OrthoMCL text (or OrthoMCL-like OrthoFinder text), select for taxa with a variety of conditions. Originally a script to 'allow one or more taxa to expand'.
 
 use strict;
@@ -158,7 +158,12 @@ while (my $input = <$INPUT_OMCL>) {
 
         foreach my $o_seq (@orthoseqs) { 
             # Obligatory parsing of the $o_seq set:
-            if ( $o_seq =~ / \A [^\s\(\)]+ \( ( [^\s\(\)]+ ) \) \z /xms ) { 
+ 
+            # Formerly used:
+            # if ( $o_seq =~ / \A [^\s\(\)]+ \( ( [^\s\(\)]+ ) \) \z /xms ) {
+            # But Drosophila has weird gene/protein names with internal parentheses, so...
+
+            if ( $o_seq =~ / \A \S+ \( ( [^\s\(\)]+ ) \) \z /xms ) { 
                 my $species = $1;
 
                 # Always count the species, instance by instance through the OrthoMCL group.
