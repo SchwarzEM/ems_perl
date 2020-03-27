@@ -8,19 +8,22 @@ use File::Spec::Functions;  # catdir
 use Scalar::Util qw(looks_like_number);
 use Cwd;
 
-my $stem   = q{};
-my $limit  = q{};
-my $censor = q{};
+my $stem     = q{};
+my $job_stem = q{};
+my $limit    = q{};
+my $censor   = q{};
 
-$stem   = $ARGV[0] if $ARGV[0];
-$limit  = $ARGV[1] if $ARGV[1];
-$censor = $ARGV[2] if $ARGV[2];
+$stem     = $ARGV[0] if $ARGV[0];
+$job_stem = $ARGV[1] if $ARGV[1];
+$limit    = $ARGV[2] if $ARGV[2];
+$censor   = $ARGV[3] if $ARGV[3];
 
 my $workdir = getcwd;
 
 if ( ( $stem !~ /\A \S+ \z/xms ) or (! looks_like_number($limit) ) or ( $limit < 1 ) or ( $limit != int($limit) ) ) {
     die "make_iprscan_jobs_27mar2020.pl\n",
         "    [stem -- must be single block of text]\n",
+        "    [job_stem -- must be single block of text, should be *short* and include a date]\n",
         "    [limit -- must be positive integer]\n",
         "    [optional censored sbatch jobs, listed as X,Y,Z -- joined with commas]\n",
         ;
@@ -52,8 +55,8 @@ foreach my $i (1..$limit) {
     # again, make into a full path:
     $output_stem = catfile($workdir, $output_stem);
 
-    my $job1 = "job_iprscan_Acey_2019.05.30.$file_no.sh";
-    my $job2 = "job_iprscan_Acey_2019.05.30.$next_file_no.sh";
+    my $job1 = 'job_iprscan_' . "$job_stem.$file_no.sh";
+    my $job2 = 'job_iprscan_' . "$job_stem.$next_file_no.sh";
 
     $job1 = safename($job1);
     $job2 = safename($job2);
