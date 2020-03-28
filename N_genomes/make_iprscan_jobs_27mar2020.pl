@@ -73,8 +73,11 @@ foreach my $i (1..$limit) {
     print $JOB1 '#SBATCH --mail-type=ALL', "\n";
     print $JOB1 '#SBATCH --mail-user=ems394@cornell.edu', "\n";
     print $JOB1 "cd $workdir ;\n";
+    print $JOB1 '. $HOME/anaconda2/etc/profile.d/conda.sh ;', "\n";
+    print $JOB1 "conda activate openjdk_11.0.1 ;\n";
     print $JOB1 '$HOME/InterPro/interproscan-5.42-78.0/interproscan.sh';
     print $JOB1 " -cpu 7 -dp -iprlookup -goterms -i $input_file -b $output_stem -T temp.$file_no ;\n";
+    print $JOB1 "conda deactivate ;\n";
 
     if (! exists $no_sbatch{$next_file_no} ) { 
         print $JOB1 "sbatch $job2 ;\n";
