@@ -6,7 +6,7 @@ use autodie;
 
 while (my $infile = <>) {
     chomp $infile;
-    # Sample input: WTPBSNC1_2019.12.04/quant.genes.sf
+    # Sample input: /home/ems/wallacei/salmon/c_briggsae.WS275.XO.1_salmon_2020.04.01/quant.genes.sf
 
     if ( $infile =~ / ([^\s\/]+) _salmon_\d{4}\.\d{2}\.\d{2} \/ quant\.genes\.sf \z/xms ) {
         my $stem   = $1;
