@@ -46,7 +46,7 @@ GetOptions ( 'infile=s' => \$infile,
 if (! $infile ) {
     my $time = join( '.', &get_local_date() );
     $infile  = "$time.us-counties.csv";
-    system "curl --silent --output $infile https://github.com/nytimes/covid-19-data/blob/master/us-counties.csv ;";
+    system "curl --silent --output $infile https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv ;";
 }
 
 if ( $help or (! -e $infile) ) { 
