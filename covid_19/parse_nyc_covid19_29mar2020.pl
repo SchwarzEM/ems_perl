@@ -24,6 +24,9 @@ my $daily_new_death_ratio = 0;
 
 my $death_to_case_ratio   = 0;
 
+my $start_date     = '2020-03-14';
+my $begin_printing = 0 ;
+
 my $infile = q{};
 
 my $header =   "   Date         "
@@ -104,9 +107,14 @@ while (my $input = <$INFILE>) {
              $death_to_case_ratio = $death_to_case_ratio . '%';
         }
 
+        if ( $date eq $start_date ) {
+            $begin_printing = 1;
+        }
 
-        print "\n$header\n" if $header;
-        $header = q{};
+        if ( $begin_printing ) {
+            print "\n$header" if $header;
+            $header = q{};
+        }
 
         my $print_cases     = &commify( $cases );
         my $print_new_cases = &commify( $new_cases );
@@ -114,7 +122,7 @@ while (my $input = <$INFILE>) {
         my $print_deaths     = &commify( $deaths );
         my $print_new_deaths = &commify( $new_deaths );
  
-        if ( exists $date_comment{$date} ) {
+        if ( $begin_printing and ( exists $date_comment{$date} ) ) {
             print "\n" unless $date eq '2020-03-01';
             print "$date_comment{$date}\n";
         }
@@ -128,16 +136,18 @@ while (my $input = <$INFILE>) {
         $daily_new_death_ratio = sprintf("%-14s",$daily_new_death_ratio);
         $death_to_case_ratio   = sprintf("%-14s",$death_to_case_ratio);
 
-        print "   $date",
-              "$print_cases",
-              "$print_new_cases",
-              "$daily_new_case_ratio",
-              "$print_deaths",
-              "$print_new_deaths",
-              "$daily_new_death_ratio",
-              "$death_to_case_ratio",
-              "\n",
+        if ( $begin_printing ) {
+            print "   $date",
+                  "$print_cases",
+                  "$print_new_cases",
+                  "$daily_new_case_ratio",
+                  "$print_deaths",
+                  "$print_new_deaths",
+                  "$daily_new_death_ratio",
+                  "$death_to_case_ratio",
+                  "\n",
               ;
+        }
 
         $prev_cases  = $cases;
         $prev_deaths = $deaths ;
