@@ -24,7 +24,7 @@ my $daily_new_death_ratio = 0;
 
 my $death_to_case_ratio   = 0;
 
-my $start_date     = '2020-03-14';
+my $start_date     = '2020-03-22';
 my $begin_printing = 0 ;
 
 my $infile = q{};
