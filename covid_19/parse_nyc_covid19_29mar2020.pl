@@ -63,9 +63,7 @@ if ( $help or (! -e $infile) ) {
 my %date_comment = (
     '2020-03-01' => '   # Sun. 3/1, start of available records:',
     '2020-03-14' => '   # Sat. 3/14, first recorded Covid-19 death:',
-    '2020-03-16' => '   # Mon. 3/16, De Blasio defends his going to the gym:',
     '2020-03-22' => '   # Sun. 3/22, NYC goes into lockdown ordered by Cuomo:',
-    '2020-03-27' => '   # Fri. 3/27, trials of hydroxychloroquine and azithromycin begin on ~1,100 patients:',
 );
 
 open my $INFILE, '<', $infile;
