@@ -7,8 +7,9 @@ use autodie;
 while (my $infile = <>) {
     chomp $infile;
     # Sample input: /home/ems/wallacei/salmon/c_briggsae.WS275.XO.1_salmon_2020.04.01/quant.genes.sf
+    # Also want to be able to process inputs with: ../quant.sf
 
-    if ( $infile =~ / ([^\s\/]+) _salmon_\d{4}\.\d{2}\.\d{2} \/ quant\.genes\.sf \z/xms ) {
+    if ( $infile =~ / ([^\s\/]+) _salmon_\d{4}\.\d{2}\.\d{2} \/ quant (?: \.genes){0,1} \.sf \z/xms ) {
         my $stem   = $1;
 
         my $outfile = "$stem.salmon.tsv.txt";
