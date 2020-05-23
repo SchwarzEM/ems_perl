@@ -28,6 +28,9 @@ if ( $help or (! @infiles) or (! $cds2gene) ) {
         ;
 }
 
+# We want TPM totals to be scaled linearly by the total number of input data files.
+my $infile_no = @infiles;
+
 open my $CDS2GENE, '<', $cds2gene;
 while (my $input = <$CDS2GENE>) {
     chomp $input;
@@ -53,6 +56,9 @@ foreach my $infile (@infiles) {
                 die "In Salmon TPM data $infile, no non-negative, numerical TPM: $input\n";
             }
             my $gene = $data_ref->{'CDS'}->{$cds}->{'gene'};
+
+            # Divide each raw TPM value by the total number of TPM input data files.
+            $tpm = ($tpm / $infile_no);
 
             $data_ref->{'gene'}->{$gene}->{'CDS'}->{$cds}->{'tpm'} += $tpm;
             $data_ref->{'gene'}->{$gene}->{'tpm'} += $tpm;
