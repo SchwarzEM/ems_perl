@@ -19,7 +19,7 @@ while (my $input = <>) {
         $header = q{};
 
         print "cat $input | ";
-        print 'perl -ne \' s/\A["]logFC["]/Gene\tlogFC/; s/["]//g; ';
+        print 'perl -ne \' s/\A["]["]/Gene/; s/["]//g; ';
         print 's/\blogFC\b/', $geno_stem, '.logFC/g; ';
         print 's/\blogCPM\b/', $geno_stem, '.logCPM/g; ';
         print 's/\bPValue\b/', $geno_stem, '.PValue/g; ';
