@@ -74,7 +74,7 @@ while (@comparisons) {
                 . '_edgeR_exactTest_all.data_' 
                 . $suffix 
                 . ".tsv.txt\""
-                . ', sep="\t")'
+                . ', sep="\t", col.names=NA)'
                 ;
     push @lines, $line4;
 }
