@@ -64,8 +64,8 @@ while (@comparisons) {
                  ;
     push @lines, $line3;
 
-    # write.csv(as.data.frame(deg_XXX_vs_YYY), file="XXX.vs.YYY_edgeR_exactTest_all.data_$suffix.csv")
-    my $line4 = 'write.csv(as.data.frame(deg_' 
+    # write.table(as.data.frame(deg_XXX_vs_YYY), file="XXX.vs.YYY_edgeR_exactTest_all.data_$suffix.csv", sep = "\t")
+    my $line4 = 'write.table(as.data.frame(deg_' 
                 . $geno1 
                 . '_vs_' 
                 . $geno2 
@@ -73,7 +73,8 @@ while (@comparisons) {
                 . "\"$geno1.vs.$geno2" 
                 . '_edgeR_exactTest_all.data_' 
                 . $suffix 
-                . ".csv\")"
+                . ".tsv.txt\""
+                . ', sep="\t")'
                 ;
     push @lines, $line4;
 }
