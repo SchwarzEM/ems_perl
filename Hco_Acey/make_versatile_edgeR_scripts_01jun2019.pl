@@ -73,7 +73,7 @@ while (@comparisons) {
                 . "\"$geno1.vs.$geno2" 
                 . '_edgeR_exactTest_all.data_' 
                 . $suffix 
-                . ".tsv.txt\""
+                . ".orig.tsv.txt\""
                 . ', sep="\t", col.names=NA)'
                 ;
     push @lines, $line4;
