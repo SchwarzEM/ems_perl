@@ -60,10 +60,10 @@ foreach my $infile (@infiles) {
             print "$input\n";
         }
         if ( $j == 1 ) { 
-            if ( $input !~ /\A [@] \S+ \s \d:(?:Y|N):\d+:[ACGTN]* \s* \z/xms ) { 
+            if ( $input !~ /\A [@] \S+ \s \d:(?:Y|N):\d+:[ACGTN+]* \s* \z/xms ) { 
                 die "Can't parse FASTQ header: $input\n";
             } 
-            if ( $input =~ /\A [@] (\S+) (\s (\d):(?:Y|N):\d+:[ACGTN]* \s*) \z/xms ) {
+            if ( $input =~ /\A [@] (\S+) (\s (\d):(?:Y|N):\d+:[ACGTN+]* \s*) \z/xms ) {
                 $stem        = $1;
                 $distal_text = $2;
                 $digit       = $3;
