@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
-# genes2omcls.pl -- Erich Schwarz <ems394@cornell.edu>, 2/13/2013; generalized to deal with OrthoFinder data on 9/13/2016.
-# Purpose: given OrthoMCL report text (file or piped) and a named taxon, annotate each taxon's genes/proteins with its OrthoMCL groups; optionally, summarize OrthoMCL.
+# genes2omcls.pl -- Erich Schwarz <ems394@cornell.edu>, 2/13/2013; generalized to deal with OrthoMCL-ized OrthoFinder data on 9/13/2016; updated headers on 7/29/2020.
+# Purpose: given OrthoMCL-ized OrthoFinder (or real OrthoMCL) report text (file or piped) and a named taxon, annotate each taxon's genes/proteins with its OrthoMCL groups; optionally, summarize OrthoMCL.
 
 use strict;
 use warnings;
@@ -94,10 +94,10 @@ foreach my $infile (@infiles) {
 
 my $header = "Gene\t";
 if ($summary) { 
-    $header .= "Omcl_Summary\n";
+    $header .= "OFind_Summary\n";
 }
 if (! $summary) {
-    $header .= "OrthoMCL\n";
+    $header .= "OFind_Full\n";
 }
 
 my @genes = sort keys %{ $data_ref->{'gene'} };
