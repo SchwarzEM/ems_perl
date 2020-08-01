@@ -15,16 +15,16 @@ while (my $input = <>) {
         print "$input\n";
     }
 
-    elsif (      ( exists $data[48] )
-             and ( exists $data[34] )
-             and ( exists $data[35] )
-             and ( exists $data[36] )
-             and ( exists $data[27] )
-       	     and ( exists $data[49] )
-       	     and ( exists $data[26] )
-       	     and ( exists $data[17] )
-             and ( exists $data[20] )
-       	     and ( exists $data[12] ) ) {
+    elsif (      ( exists $data[53] )
+             and ( exists $data[39] )
+             and ( exists $data[40] )
+             and ( exists $data[41] )
+             and ( exists $data[32] )
+       	     and ( exists $data[54] )
+       	     and ( exists $data[31] )
+       	     and ( exists $data[22] )
+             and ( exists $data[25] )
+       	     and ( exists $data[17] ) ) {
 
         my $non_dex_int_vs_dex_int_logFC = $data[53];      # intestines_19dpi_noDEX.vs.intestines_19dpi_DEX.logFC [54]
         my @int_TPMs                     = @data[39..41];  # intestines_19dpi_noDEX_biorep_1.TPM [40],
