@@ -9,19 +9,22 @@ use Getopt::Long;
 
 my @infiles      = ();
 my $name_pattern = q{};
+my $modifier     = q{};
 my $help;
 
 GetOptions ( 'infiles=s{,}' => \@infiles,
              'name=s'       => \$name_pattern,
+             'modifier=s',  => \$modifier,
              'help'         => \$help,   );
 
 $name_pattern ||= q{\S+?};
 
 if ( $help or (! @infiles) or (! $name_pattern) ) { 
     die "Format: edit_aug_codingseq.pl\n",
-        "    --infile|-i   <input stream/files>\n",
-        "    --name|-n     [name pattern recurring in header, e.g., ", q{"Acey_2012\.08\.05_\d+"}, "; default is ", q{"\S+?"}, "]\n",
-        "    --help|-h     [print this message]\n",
+        "    --infile|-i    <input stream/files>\n",
+        "    --name|-n      [name pattern recurring in header, e.g., ", q{"Acey_2012\.08\.05_\d+"}, "; default is ", q{"\S+?"}, "]\n",
+        "    --modifier|-m  [modifier such as 'alt' to stick in front of '.g1' etc. of original gene/transcript names]\n",
+        "    --help|-h      [print this message]\n",
         ;
 }
 
@@ -41,7 +44,7 @@ foreach my $infile (@infiles) {
     while (my $input = <$INPUT_FILE>) { 
         chomp $input;
         if ( $input =~ /\A > /xms ) { 
-            if ( $input =~ /\A > ($name_pattern) \. (($name_pattern) \. alt \. g \d+ \. t \d+ \b .*) \z/xms ) { 
+            if ( $input =~ /\A > ($name_pattern) \. (($name_pattern) \. $modifier \. g \d+ \. t \d+ \b .*) \z/xms ) { 
                 my $first_tandem_repeat  = $1;
                 my $revised_header       = $2;
                 my $second_tandem_repeat = $3;
