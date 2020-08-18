@@ -18,7 +18,7 @@ GetOptions ( 'infiles=s{,}' => \@infiles,
 $name_pattern ||= q{\S+?};
 
 if ( $help or (! @infiles) or (! $name_pattern) ) { 
-    die "Format: count_fasta_residues.pl\n",
+    die "Format: edit_aug_codingseq.pl\n",
         "    --infile|-i   <input stream/files>\n",
         "    --name|-n     [name pattern recurring in header, e.g., ", q{"Acey_2012\.08\.05_\d+"}, "; default is ", q{"\S+?"}, "]\n",
         "    --help|-h     [print this message]\n",
