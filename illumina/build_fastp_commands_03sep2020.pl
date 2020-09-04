@@ -34,7 +34,7 @@ while (my $input_1 = <>) {
                        . "--json $json --html $html "
                        . "--in1 $input_1 --out1 $output_1 "
                        . "--in2 $input_2 --out2 $output_2 "
-                       . "-unpaired1 $unpaired --unpaired2 $unpaired ;"
+                       . "--unpaired1 $unpaired --unpaired2 $unpaired ;"
                        ;
 
         my $command2 = "zcat $output_1 | count_simple_fastq_residues.pl > $output_1_count ;";
