@@ -65,7 +65,7 @@ while (my $input = <$INPUT2JOB>) {
         my $salmon_command = "salmon --no-version-check quant --threads 8 --libType A "
                              . "--seqBias --gcBias --posBias --validateMappings --rangeFactorizationBins 4 --numBootstraps $boots "
                              . "--geneMap $genemap "
-                             . "--index db $salmon_db "
+                             . "--index $salmon_db "
                              . "--mates1 $infile1 "
                              . "--mates2 $infile2 "
                              . "--unmatedReads $infile3 "
