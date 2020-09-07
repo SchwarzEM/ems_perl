@@ -52,11 +52,6 @@ while (my $input = <$INPUT2JOB>) {
             die "Cannot read input file 2: $infile2\n";
         }
 
-        my $infile3 = $stem . '.unpaired.fq.gz';
-        if (! -r $infile3) {
-            die "Cannot read input file 3: $infile3\n";
-       	}
-
 	my $outfile = $label . '_' . "$boots-boots.salmon";
         if (-e $outfile) {
             die "Planned output file already exists: $outfile\n";
@@ -68,7 +63,6 @@ while (my $input = <$INPUT2JOB>) {
                              . "--index $salmon_db "
                              . "--mates1 $infile1 "
                              . "--mates2 $infile2 "
-                             . "--unmatedReads $infile3 "
                              . "--output $outfile ;"
                              ;
 
