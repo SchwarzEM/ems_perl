@@ -93,7 +93,7 @@ my $out_pfam = $infile . '.Pfam';  # Pfam|hmms
 $out_pfam = safename($out_pfam);
 open my $PFAM, '>', $out_pfam;
 
-my $out_interpro = $infile . '.interpro';  # InterPro|interpro|PantherDB
+my $out_interpro = $infile . '.interpro';  # InterPro|interpro|PantherDB|iprscan
 $out_interpro = safename($out_interpro);
 open my $INTERPRO, '>', $out_interpro;
 
@@ -216,7 +216,7 @@ while (my $input = <$INFILE>) {
         elsif ( $job_name =~ /Pfam|hmms/xms ) {
              print $PFAM "$job_name\t$cpus\n";
         }
-	elsif ( $job_name =~ /InterPro|interpro|PantherDB/xms ) {
+	elsif ( $job_name =~ /InterPro|interpro|PantherDB|iprscan/xms ) {
              print $INTERPRO "$job_name\t$cpus\n";
         }
         elsif ( $job_name =~ /phobius/xms ) {
