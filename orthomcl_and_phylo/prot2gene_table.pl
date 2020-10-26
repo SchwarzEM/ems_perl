@@ -49,6 +49,8 @@ my %ok_headers = ( wormbase => 'wormbase',
 
                    column3  => 'column3',
                    col3     => 'column3',
+
+                   self     => 'self',
 );
 
 my $header  = q{};
@@ -76,7 +78,8 @@ if ( $help or (! @infiles) ) {
         "                   'maker|mak'\n",
         "                   'parasite|par'\n",
         "                   'par_old'\n",
-        "                or 'column3|col3';\n", 
+        "                   'column3|col3'\n", 
+        "                or 'self';\n",
         "                   default is 'wormbase']\n",
         "    --species|-s  [optional: provide a taxon name, to be printed as a third column]\n",
         "    --help|-h     [print this message]\n",
@@ -85,7 +88,7 @@ if ( $help or (! @infiles) ) {
 
 if ($header_type) { 
     if (! exists $ok_headers{$header_type} ) { 
-        die "Header type must be 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', 'fly_old', 'maker|mak', 'parasite|par', 'par_old', or 'column3|col3', not \"$header_type\"\n";
+        die "Header type must be 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', 'fly_old', 'maker|mak', 'parasite|par', 'par_old', 'column3|col3', or 'self', not \"$header_type\"\n";
     }
     else { 
         # Map to full names of header types, if abbreviated:
@@ -168,6 +171,12 @@ foreach my $infile (@infiles) {
             elsif ( ( $header_type eq 'column3' ) and ( $input =~ /\A > (\S+) \s+ \S+ \s+ (\S+) \s* \z/xms ) ) {
                 $protein = $1;
                 $gene    = $2;
+                $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
+            }
+
+            elsif ( ( $header_type eq 'self' ) and ( $input =~ /\A > (\S+) /xms ) ) {
+                $protein = $1;
+                $gene    = $1;
                 $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
             }
 
