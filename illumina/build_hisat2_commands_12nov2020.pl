@@ -21,7 +21,7 @@ while (my $input = <>) {
         my $log = "$file_stem.hisat2.$db_stem.log.txt";
         my $err = "$file_stem.hisat2.$db_stem.err.txt";
 
-        my $command = "hisat2 -p 8 -x $db -1 $input_1 -2 $input_2 -S $sam 1>$log 2>$err	;";
+        my $command = "hisat2 -p 8 -x $db -1 $input_1 -2 $input_2 -S $sam 1>$log 2>$err ;";
         print "$command\n";
 
         if (! -r $input_1 ) {
