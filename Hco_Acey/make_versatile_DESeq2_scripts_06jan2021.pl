@@ -13,6 +13,7 @@ my $input_data  = q{};
 my $conditions  = q{};
 my @genotypes   = ();
 my @pairs       = ();
+my $alpha       = 0.1;
 my $suffix      = q{};
 
 my $help;
@@ -22,6 +23,7 @@ GetOptions ( 'working_dir=s'    => \$working_dir,
              'conditions=s',    => \$conditions,
              'genotypes=s{,}'   => \@genotypes,
              'pairs=s{,}'       => \@pairs,
+             'alpha=f',         => \$alpha,
              'suffix=s'         => \$suffix,
              'help'             => \$help,   );
 
@@ -32,6 +34,7 @@ if ( $help or (! $working_dir) or (! $input_data ) or (! $conditions )  or (! @g
         "    --conditions|-c   [conditions table for DESeq2]\n",
         "    --genotypes|-g    [list of genotypes for input data replicate columns]\n",
         "    --pairs|-p        [list of genotype pairs to be compared]\n",
+        "    --alpha|-a        [alpha value for results command; default value of 0.1]\n",
         "    --suffix|-s       [suffix for output files]\n",
         "    --help|-h         [print this message]\n",
         ;
@@ -55,7 +58,9 @@ while (@pairs) {
     # Note that I am doing it this way so that if XXX has stronger expression, it will get a positive logFC value!
     # That does not happen if one does things intuitively and submits 'pair=c("XXX","YYY")' to edgeR.
 
-    my $line2 = 'res_' . $geno1 . '_vs_' . $geno2 . ' <- results(dds1, contrast=c("condition","' . $geno1 . '","' . $geno2 . '"), alpha = 0.1)';
+    my $line2 = 'res_' 
+                . $geno1 . '_vs_' . $geno2 
+                . " <- results(dds1, contrast=c(\"condition\",$geno1,$geno2), alpha = $alpha)";
     push @lines, $line2;
 
     # summary(res_XXX_vs_YYY)
