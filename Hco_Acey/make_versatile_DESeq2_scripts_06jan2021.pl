@@ -72,7 +72,8 @@ while (@pairs) {
     push @lines, $line3;
 
     # resOrdered_XXX_vs_YYY <- res[order(res_XXX_vs_YYY$padj),]
-    my $line4 = 'resOrdered_' . $geno1 . '_vs_' . $geno2 . ' <- res[order(res_' . $geno1 . '_vs_' . $geno2 . '$padj),]';
+    my $line4 = 'resOrdered_' . $geno1 . '_vs_' . $geno2 
+            . ' <- res_' . $geno1 . '_vs_' . $geno2 . '[order(res_' . $geno1 . '_vs_' . $geno2 . '$padj),]';
     push @lines, $line4;
 
     # write.table(as.data.frame(resOrdered_XXX_vs_YYY), file="XXX.vs.YYY_DESeq2_all.data_$suffix.csv", sep = "\t")
