@@ -11,6 +11,7 @@ use List::MoreUtils qw(uniq);
 my $working_dir = q{};
 my $input_data  = q{};
 my $conditions  = q{};
+my @design      = ();
 my @genotypes   = ();
 my @pairs       = ();
 my $alpha       = 0.1;
@@ -21,17 +22,19 @@ my $help;
 GetOptions ( 'working_dir=s'    => \$working_dir,
              'input_data=s'     => \$input_data,
              'conditions=s',    => \$conditions,
+             'design=s{,}'      => \@design,
              'genotypes=s{,}'   => \@genotypes,
              'pairs=s{,}'       => \@pairs,
              'alpha=f',         => \$alpha,
              'suffix=s'         => \$suffix,
              'help'             => \$help,   );
 
-if ( $help or (! $working_dir) or (! $input_data ) or (! $conditions )  or (! @genotypes ) ) {
+if ( $help or (! $working_dir) or (! $input_data ) or (! $conditions ) or (! @design ) or (! @genotypes ) ) {
     die "Format: make_versatile_DESeq2_scripts_06jan2021.pl \n",
         "    --working_dir|-w  [working directory for R]\n",
         "    --input_data|-i   [input data file for DESeq2]\n",
         "    --conditions|-c   [conditions table for DESeq2]\n",
+        "    --design|-d       [one or more argument(s) for \"design\": probably want either \"batch condition\" or just \"condition\"]\n",
         "    --genotypes|-g    [list of genotypes for input data replicate columns]\n",
         "    --pairs|-p        [list of genotype pairs to be compared]\n",
         "    --alpha|-a        [alpha value for results command; default value of 0.1]\n",
@@ -42,6 +45,7 @@ if ( $help or (! $working_dir) or (! $input_data ) or (! $conditions )  or (! @g
 
 my @quoted_genotypes = map { q{"} . $_ . q{"} } @genotypes;
 my $genotype_vector  = join ",", @quoted_genotypes;
+my $design_text      = join " + ", @design;
 
 my @lines = ();
 
@@ -99,7 +103,7 @@ print ' <- read.delim("', $input_data, '",row.names="Gene")', "\n";
 print 'DESeq2_conditions';
 print ' <- read.delim("', $conditions, "\")\n";
 
-print "dds1 <- DESeqDataSetFromMatrix(countData = DESeq2_input_data, colData = DESeq2_conditions, design = ~ batch + condition)\n";
+print "dds1 <- DESeqDataSetFromMatrix(countData = DESeq2_input_data, colData = DESeq2_conditions, design = ~ $design_text)\n";
 print "dds1 <- DESeq(dds1)\n";
 
 # now, print out many stanzas of repetitive comparisons of different genotypes:
