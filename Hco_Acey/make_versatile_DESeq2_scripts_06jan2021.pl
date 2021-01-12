@@ -64,7 +64,7 @@ while (@pairs) {
 
     my $line2 = 'res_' 
                 . $geno1 . '_vs_' . $geno2 
-                . " <- results(dds1, contrast=c(\"condition\",$geno1,$geno2), alpha = $alpha)";
+                . " <- results(dds1, contrast=c(\"condition\",\"$geno1\",\"$geno2\"), alpha = $alpha)";
     push @lines, $line2;
 
     # summary(res_XXX_vs_YYY)
