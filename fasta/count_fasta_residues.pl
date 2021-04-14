@@ -104,6 +104,12 @@ foreach my $infile (@infiles) {
     }
     while (my $input = <$INPUT_FILE>) { 
         chomp $input;
+        if ( $input =~ /\r/xms ) {
+            warn "In input file \"$infile\", unacceptable \\r carriage-return character; remove all \\r characters before use.\n";
+            warn "If input file \"$infile\" lacks \\n hard returns, replace all \\r characters with \\n characters.\n";
+            die "First (fatal) offending text line: $input\n";
+        }
+
         if ( $input =~ / \A > (\S+) /xms ) { 
             $scaf_name = $1;
             if ( exists $scaf_seqs{$scaf_name} ) {
