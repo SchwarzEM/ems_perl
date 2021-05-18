@@ -8,7 +8,7 @@ my %entry2number = ();
 
 while (my $input = <>) {
     chomp $input;
-    if ( $input =~ /\A (\S+) (\t .+) \z/xms ) {
+    if ( $input =~ /\A (\S+) \t (.+) \z/xms ) {
         my $entry = $1;
         my $data  = $2;
         $entry2number{$entry}++;
