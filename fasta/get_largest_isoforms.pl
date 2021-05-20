@@ -34,7 +34,8 @@ my %ok_headers = ( wormbase => 'wormbase',
                    parasite => 'parasite',
                    par      => 'parasite',
 
-                   par_old  => 'parasite_old',
+                   parasite_old => 'parasite_old',
+                   par_old      => 'parasite_old',
 
                    column3  => 'column3',
                    col3     => 'column3',
@@ -62,7 +63,7 @@ if ( $help or (! @infiles) ) {
         "                   'fly_old'\n",
         "                   'maker|mak'\n",
         "                   'parasite|par'\n",
-        "                   'par_old'\n",
+        "                   'parasite_old|par_old'\n",
         "                or 'column3|col3';\n", 
         "                   default is 'wormbase']\n",
         "    --help|-h     [print this message]\n",
@@ -71,7 +72,7 @@ if ( $help or (! @infiles) ) {
 
 if ($header_type) { 
     if (! exists $ok_headers{$header_type} ) { 
-        die "Header type must be 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', 'fly_old', 'maker|mak', 'parasite|par', 'par_old', or 'column3|col3', not \"$header_type\"\n";
+        die "Header type must be 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', 'fly_old', 'maker|mak', 'parasite|par', 'parasite_old|par_old', or 'column3|col3', not \"$header_type\"\n";
     }
     else { 
         # Map to full names of header types, if abbreviated:
