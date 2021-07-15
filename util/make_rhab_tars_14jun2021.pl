@@ -9,14 +9,16 @@ use Cwd;
 my $i        = 0;
 my $list     = q{};
 my $job      = q{};
+my $dest     = q{};
 
 my $work_dir = getcwd;
 
 $list = $ARGV[0] if $ARGV[0];
 $job  = $ARGV[1] if $ARGV[1];
+$dest = $ARGV[2] if $ARGV[2];
 
 if ( (! $list) or (! $job) ) {
-    die "Format: make_rhab_tars_14jun2021.pl  [input list of directories]  [batch job stem name] => print 1+ job scripts\n";
+    die "Format: make_rhab_tars_14jun2021.pl  [input list of directories]  [batch job stem name]  [backup destination] => print 1+ job scripts\n";
 }
 
 open my $LIST, '<', $list;
@@ -42,8 +44,8 @@ while (my $arch_dir = <$LIST>) {
     print $OUTFILE "cd $work_dir ;\n";
     
     print $OUTFILE "tar cvf $arch_dir.tar $arch_dir ;\n";
-    print $OUTFILE "mv -i $arch_dir /ocean/projects/mcb190015p/schwarze/Z_backup/deprecated/rhabditella ;\n";
-    print $OUTFILE "mv -i $arch_dir.tar /ocean/projects/mcb190015p/schwarze/Z_backup/tar_archives/rhabditella ;\n";
+    print $OUTFILE "mv -i $arch_dir /ocean/projects/mcb190015p/schwarze/Z_backup/deprecated/$dest ;\n";
+    print $OUTFILE "mv -i $arch_dir.tar /ocean/projects/mcb190015p/schwarze/Z_backup/tar_archives/$dest ;\n";
 
     close $OUTFILE;
 }
