@@ -13,7 +13,6 @@ while (my $input = <>) {
         print "gunzip $input ;\n";
         $input =~ s/\.gz\z//;
         print "cat $input >> filt0_RNAseq_reads/$output ;\n";
-        print "gzip $input ;\n";
     }
     else {
         die "Cannot parse: $input\n";
