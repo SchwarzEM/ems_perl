@@ -6,11 +6,14 @@ use autodie;
 
 while (my $input = <>) {
     chomp $input;
-    if ( $input =~ /\A (\S+) \/ \S+ (_\d+\.fastq\.gz) \z/xms ) { 
+    if ( $input =~ /\A (\S+) \/ \S+ (_\d+\.fastq)\.gz \z/xms ) { 
         my $type   = $1;
         my $suffix = $2;
         my $output = $type . $suffix;
-        print "zcat $input >> filt0_RNAseq_reads/$output\n";
+        print "gunzip $input ;\n";
+        $input =~ s/\.gz\z//;
+        print "cat $input >> filt0_RNAseq_reads/$output ;\n";
+        print "gzip $input ;\n";
     }
     else {
         die "Cannot parse: $input\n";
