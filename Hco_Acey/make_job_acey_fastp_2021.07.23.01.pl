@@ -36,7 +36,7 @@ while (my $infile_1 = <>) {
         print '#SBATCH --nodes=1', "\n" if $header;
         print '#SBATCH --partition=RM-shared', "\n" if $header;
         print '#SBATCH --time=48:00:00', "\n" if $header;
-        print '#SBATCH --ntasks-per-node=8', "\n" if $header;
+        print '#SBATCH --ntasks-per-node=24', "\n" if $header;
         print '#SBATCH --job-name=job_acey_fastp_20XX.XX.XX.XX.sh', "\n" if $header;
         print '#SBATCH --mail-type=ALL', "\n" if $header;
         print "cd $start_dir ;\n" if $header;
@@ -45,7 +45,7 @@ while (my $infile_1 = <>) {
 
         $header = 0;
 
-        print "fastp --thread 8 --dont_overwrite --json $json --html $html ";
+        print "fastp --thread 24 --dont_overwrite --json $json --html $html ";
         print ' --n_base_limit 0 --length_required 50 --max_len1 50';
         print " --in1 $infile_1 --out1 $outfile_1 ;\n";
         print "cat $outfile_1 | count_simple_fastq_residues.pl > $outcount_1 ;\n";
