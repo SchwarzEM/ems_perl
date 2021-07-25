@@ -10,7 +10,7 @@ use List::MoreUtils qw(uniq);
 
 my $infile      = q{};
 my $curr_dir    = getcwd;
-my $i           = 0;
+my $i           = 1;
 my %file2script = ();
 
 my @prefixes = ();
@@ -20,14 +20,18 @@ my $data_ref;
 my $help;
 
 GetOptions ( 'infiles=s' => \$infile,
+             'start=i'   => \$i,
              'help'      => \$help,   );
 
 if ( $help or (! $infile) ) {
     die "Format: make_acey_salmon_2021.07.25.02.pl\n",
         "    --infile|-i   <input table, with prefix-file(s) pairs>\n",
+        "    --start|-s    <starting index; default of 1>\n",
         "    --help|-h     [print this message]\n",
         ;
 }
+
+$i--;
 
 open my $INFILE, '<', $infile;
 
