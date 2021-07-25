@@ -92,7 +92,7 @@ foreach my $prefix (@prefixes) {
     print $OUT "--libType A ";
     print $OUT "--unmatedReads $input_data ";
     print $OUT "--output $output_prefix ";
-    print $OUT '--geneMap $PROJECT/Acey/2021.07.24/salmon/annots/Acey_PRJNA231479.WBPS15.cds2gene.tsv.txt ';
+    print $OUT '--geneMap $PROJECT/Acey/2021.07.24/salmon/annots/Acey_PRJNA231479.WBPS15.cds2gene.tsv.txt ;';
 
     print $OUT "\n";
 
