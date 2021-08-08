@@ -16,6 +16,9 @@ use Getopt::Long;
 #
 # @SRR2138602.6846449 6846449/1
 # @SRR2138602.6846449 6846449/2 
+# 
+# Another sample input requiring revised regex:
+# @SRR2138602.1 1/1
 
 my @infiles = ();
 
@@ -61,10 +64,10 @@ foreach my $infile (@infiles) {
             print "$input\n";
         }
         if ( $j == 1 ) { 
-            if ( $input !~ /\A [@] \S+ \s \S .+ \/ [12] \s* \z/xms ) { 
+            if ( $input !~ /\A [@] \S+ \s .* \/ [12] \s* \z/xms ) { 
                 die "Can't parse FASTQ header: $input\n";
             } 
-            if ( $input =~ /\A [@] (\S+) (\s \S .+ \/ ([12]) \s*) \z/xms ) {
+            if ( $input =~ /\A [@] (\S+) (\s .* \/ ([12]) \s*) \z/xms ) {
                 $stem        = $1;
                 $distal_text = $2;
                 $digit       = $3;
