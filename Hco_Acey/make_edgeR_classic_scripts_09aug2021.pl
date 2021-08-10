@@ -102,7 +102,7 @@ print 'geno_comp$samples', "\n";
 print '# Set up statistical data set:', "\n";
 print 'geno_comp <- calcNormFactors(geno_comp)', "\n";
 print 'geno_design <- model.matrix(~genotypes)', "\n";
-print 'geno_comp <- estimateDisp(geno_comp,geno_design)', "\n";
+print 'geno_comp <- estimateDisp(geno_comp,geno_design,robust=TRUE)', "\n";
 
 # now, print out many stanzas of repetitive comparisons of different genotypes:
 
