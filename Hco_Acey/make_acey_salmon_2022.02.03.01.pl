@@ -41,17 +41,17 @@ while (my $input = <$INFILE>) {
         my $prefix     = $1;
         my $input_data = $2;
 
-        if ( $input_data !~ / \.(?:fasta|fq) (?:\.gz){0,1} \z/xms ) {
+        if ( $input_data !~ / \.(?:fastq|fq) (?:\.gz){0,1} \z/xms ) {
             die "Cannot accept data as a valid FastQ file: $input_data\n";
         }
 
         $i++;
         my $j = sprintf "%02u", $i;
 
-        my $output_script = "job_acey_salmon_2022.02.03.$j.sh";
+        my $output_script = "job_acey_salmon_2022.02.12.$j.sh";
         $output_script    = safename($output_script);
 
-        my $output_prefix = $prefix . ".salmon.2022.02.03.$j";
+        my $output_prefix = $prefix . ".salmon.2022.02.12.$j";
 
         if ( exists $data_ref->{'prefix'}->{$prefix} ) {
             die "Redundant input prefix: $prefix\n";
@@ -92,7 +92,7 @@ foreach my $prefix (@prefixes) {
     print $OUT "--libType A ";
     print $OUT "--unmatedReads $input_data ";
     print $OUT "--output $output_prefix ";
-    print $OUT '--geneMap $PROJECT/Acey/2022.02.03/annots/Acey_v2.2022.02.02.02.cds2gene.tsv.txt ;';
+    print $OUT '--geneMap $PROJECT/Acey/2022.02.03/annots/Acey_v2.2022.02.02.01.cds2gene.tsv.txt ;';
 
     print $OUT "\n";
 
