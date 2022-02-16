@@ -88,11 +88,11 @@ foreach my $prefix (@prefixes) {
     print $OUT 'conda activate salmon_1.6.0 ;', "\n";
 
     print $OUT "salmon --no-version-check quant --threads 16 --seqBias --gcBias --posBias ";
-    print $OUT '--index $PROJECT/Acey/2022.02.03/salmon/dbs/Acey.v2_WBPS16_gentrome_index ';
+    print $OUT '--index $PROJECT/Acey/2022.02.13/salmon/dbs/Acey.v2_WBPS16_gentrome_index ';
     print $OUT "--libType A ";
     print $OUT "--unmatedReads $input_data ";
     print $OUT "--output $output_prefix ";
-    print $OUT '--geneMap $PROJECT/Acey/2022.02.03/annots/Acey_v2.2022.02.02.01.cds2gene.tsv.txt ;';
+    print $OUT '--geneMap $PROJECT/Acey/2022.02.13/annots/Acey_v2.2022.02.15.01.cds2gene.tsv.txt ;';
 
     print $OUT "\n";
 
