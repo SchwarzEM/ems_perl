@@ -31,7 +31,7 @@ while (my $input = <>) {
             $data_ref->{'wbgene'}->{$wbgene}->{'seqname'} = $seqname;
             $pubname = $seqname;
        }
-       if ( $input =~ / locus = (\S+) /xms ) { 
+       if ( $input =~ / locus (?:=|:) (\S+) /xms ) { 
            $pubname = $1;
        }
        $data_ref->{'wbgene'}->{$wbgene}->{'pubname'} = $pubname;
