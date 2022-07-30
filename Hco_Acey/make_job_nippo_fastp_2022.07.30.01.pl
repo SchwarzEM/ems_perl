@@ -69,8 +69,7 @@ while (my $infile_1 = <>) {
 
         $header = 0;
 
-        print "fastp --thread 32 --dont_overwrite --json $json --html $html";
-        print ' --length_required 50';
+        print "fastp --thread 32 --dont_overwrite --detect_adapter_for_pe --dedup --max_len1 50 --length_required 40 --json $json --html $html";
         print " --in1 $infile_1 --in2 $infile_2 --out1 $outfile_1 --out2 $outfile_2 ;\n";
     }
 
