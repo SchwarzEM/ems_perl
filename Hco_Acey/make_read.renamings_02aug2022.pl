@@ -62,7 +62,7 @@ while (my $input = <>) {
         print $JOB1 '#SBATCH --nodes=1', "\n";
         print $JOB1 '#SBATCH --partition=RM-shared', "\n";
         print $JOB1 '#SBATCH --time=004:00:00', "\n";
-        print $JOB1 '#SBATCH --ntasks-per-node=1', "\n";
+        print $JOB1 '#SBATCH --ntasks-per-node=2', "\n";
         print $JOB1 '#SBATCH --job-name=', "$job_name\n";
         print $JOB1 '#SBATCH --mail-type=ALL', "\n";
         print $JOB1 "cd $workdir ;\n";
