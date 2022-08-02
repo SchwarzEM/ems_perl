@@ -67,8 +67,8 @@ while (my $input = <>) {
         print $JOB1 '#SBATCH --mail-type=ALL', "\n";
         print $JOB1 "cd $workdir ;\n";
         print $JOB1 '. $PROJECT/anaconda3/etc/profile.d/conda.sh ;', "\n";
-        print $JOB1 "cat $infile_1 | perl -ne ", q{' s/\A([@]\S+) 1/$1\#0\/1 1/; print; '}, " > $outfile_1 ;\n";
-        print $JOB1 "cat $infile_2 | perl -ne ", q{' s/\A([@]\S+) 1/$1\#0\/2 2/; print; '}, " > $outfile_2 ;\n";
+        print $JOB1 "cat $infile_1 | perl -ne ", q{' s/\A([@]\S+) \d:/$1\#0\/1 1:/; print; '}, " > $outfile_1 ;\n";
+        print $JOB1 "cat $infile_2 | perl -ne ", q{' s/\A([@]\S+) \d:/$1\#0\/2 2:/; print; '}, " > $outfile_2 ;\n";
         print $JOB1 'conda activate seqtk_1.3 ;', "\n";
         print $JOB1 "seqtk mergepe $outfile_1 $outfile_2 > $mergefile ;\n";
         print $JOB1 "conda deactivate ;\n";
