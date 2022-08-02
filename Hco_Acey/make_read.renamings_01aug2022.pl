@@ -72,6 +72,9 @@ while (my $input = <>) {
         print $JOB1 'conda activate seqtk_1.3 ;', "\n";
         print $JOB1 "seqtk mergepe $outfile_1 $outfile_2 > $mergefile ;\n";
         print $JOB1 "conda deactivate ;\n";
+        print $JOB1 'conda activate seqkit_2.1.0 ;', "\n";
+        print $JOB1 "seqkit stats --all --threads 1 $mergefile > $mergefile.seqkit_stats.txt ;
+        print $JOB1 "conda deactivate ;\n";
         close $JOB1;
     }
     else {
