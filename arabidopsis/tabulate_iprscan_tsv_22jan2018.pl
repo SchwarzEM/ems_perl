@@ -49,7 +49,8 @@ foreach my $infile (@infiles) {
     open my $INFILE, '<', $infile;
     while (my $input = <$INFILE>) { 
         chomp $input;
-        if ( $input =~ /\A (\S+) \t (?: [^\t]* \t){10} (IPR\d+) \t ([^\t]+) (?:\t|\z) /xms ) { 
+        # Sample InterPro ID: IPR035500
+        if ( $input =~ /\A (\S+) \t (?: [^\t]* \t){10} (IPR\d{6}) \t ([^\t]+) (?:\t|\z) /xms ) { 
             my $tx       = $1;
             my $ipr_acc  = $2;
             my $ipr_desc = $3;
@@ -62,7 +63,7 @@ foreach my $infile (@infiles) {
             my $full_ipr_desc = "$ipr_desc [$ipr_acc]";
             $data_ref->{'gene'}->{$gene}->{'interpro'}->{$full_ipr_desc} = 1;
         }
-        elsif ( $input =~ /IPR\d+/xms ) {
+        elsif ( $input =~ /IPR\d{6}/xms ) {
             die "Cannot parse input: $input\n";
         }
     }
