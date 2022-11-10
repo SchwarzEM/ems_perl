@@ -83,6 +83,7 @@ while (@comparisons) {
 
 print '# Load edgeR:', "\n";
 print 'library(edgeR)', "\n";
+print 'library(statmod)', "\n";  # added to deal with broken bioconda packages -- see https://support.bioconductor.org/p/9138921
 print '# Import data:', "\n";
 print 'setwd("', $working_dir, '")', "\n";
 
