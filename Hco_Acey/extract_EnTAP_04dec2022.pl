@@ -18,7 +18,9 @@ while (my $input = <>) {
                        ([^\t]*) \t 
                        ([^\t]*) \t 
                        ([^\t]*) \t/xms ) {
-        print "$1\t$2\t$3\t$4\t$5\t$6\t$7\t$8\n";
+        my $output = "$1\t$2\t$3\t$4\t$5\t$6\t$7\t$8";
+        $output =~ s/\AQuery Sequence/Gene/;
+        print "$output\n";
     }
     else {
         die "From input, cannot parse: $input\n";
