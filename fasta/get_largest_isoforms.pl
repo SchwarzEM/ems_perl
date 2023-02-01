@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 # get_largest_isoforms.pl -- Erich Schwarz <ems394@cornell.edu>, 7/29/2018.
-# Purpose: given a proteome in FASTA format with known pattern of identifiers in the headers, print largest isoform per gene (currently handles WormBase official, augustus, augustus-like '.t\d+', ensembl, FlyBase, Maker, ParaSite [release 10], ParaSite [pre-release 10], or three-column proteomes).
+# Purpose: given a proteome in FASTA format with known pattern of identifiers in the headers, print largest isoform per gene (currently handles WormBase official, augustus, augustus-like '.t\d+', ensembl, FlyBase, Maker (older and newer formats), ParaSite [release 10], ParaSite [pre-release 10], or three-column proteomes).
 
 use strict;
 use warnings;
@@ -30,6 +30,9 @@ my %ok_headers = ( wormbase => 'wormbase',
 
                    maker    => 'maker',
                    mak      => 'maker', 
+
+                   maker_old => 'maker_old',
+                   mak_old   => 'maker_old',
 
                    parasite => 'parasite',
                    par      => 'parasite',
@@ -62,6 +65,7 @@ if ( $help or (! @infiles) ) {
         "                   'flybase|fly'\n",
         "                   'fly_old'\n",
         "                   'maker|mak'\n",
+        "                   'maker_old|mak_old'\n",
         "                   'parasite|par'\n",
         "                   'parasite_old|par_old'\n",
         "                or 'column3|col3';\n", 
@@ -72,7 +76,11 @@ if ( $help or (! @infiles) ) {
 
 if ($header_type) { 
     if (! exists $ok_headers{$header_type} ) { 
-        die "Header type must be 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', 'fly_old', 'maker|mak', 'parasite|par', 'parasite_old|par_old', or 'column3|col3', not \"$header_type\"\n";
+        die "Header type must be",
+            " 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly',",
+            " 'fly_old', 'maker|mak', 'maker_old|mak_old', 'parasite|par', 'parasite_old|par_old',",
+            " or 'column3|col3', not \"$header_type\"\n",
+            ;
     }
     else { 
         # Map to full names of header types, if abbreviated:
@@ -154,7 +162,14 @@ foreach my $infile (@infiles) {
                 $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
             }
 
-            elsif ( ( $header_type eq 'maker' ) and ( $input =~ /\A > ( ( (\S+) [-]mRNA[-]\d+) \b .*) \z/xms ) ) {
+            elsif ( ( $header_type eq 'maker' ) and ( $input =~ /\A > ( ( (\S+) [-]\d+) \b .*) \z/xms ) ) {
+                $header  = $1;
+                $protein = $2;
+                $gene    = $3; 
+                $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
+            }
+
+            elsif ( ( $header_type eq 'maker_old' ) and ( $input =~ /\A > ( ( (\S+) [-]mRNA[-]\d+) \b .*) \z/xms ) ) {
                 $header  = $1;
                 $protein = $2;
                 $gene    = $3; 
