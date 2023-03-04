@@ -13,19 +13,23 @@ my $data_ref;
 my $gene2cds = q{};
 my $annot    = q{};
 my $title    = q{};
+
+my $no_split;
 my $help;
 
 GetOptions ( 'gene2cds=s' => \$gene2cds,
              'annot=s'    => \$annot,
              'title=s'    => \$title,
+             'no_split'   => \$no_split,
              'help'       => \$help, );
 
 if ( $help or (! $gene2cds) or (! $annot) ) { 
-    die "Format: cds2gene_annot.pl",
-        " --gene2cds|-g [gene-to-CDS table]",
-        " --annot|-a [cds-annots in TSV]",
-        " --title|-t [optional title of annot column (default, \"Annot\")",
-        " --help|-h [print this message]\n",
+    die "Format: cds2gene_annot.pl\n",
+        "        --gene2cds|-g  [gene-to-CDS table]\n",
+        "        --annot|-a     [cds-annots in TSV]\n",
+        "        --title|-t     [optional title of annot column (default, \"Annot\")]\n",
+        "        --no_split|-n  [option to not split input annotations]\n",
+        "        --help|-h      [print this message]\n",
         ;
 }
 
@@ -64,10 +68,15 @@ while (my $input = <$ANNOT>) {
             $orig_annots =~ s/\A\s+//;
             $orig_annots =~ s/\s+\z//;
 
-            my @annots = split /[,]|\t/, $orig_annots;
+            if (! $no_split ) {
+                my @annots = split /[,]|\t/, $orig_annots;
 
-            foreach my $annot (@annots) {
-                $data_ref->{'gene'}->{$gene}->{'annots'}->{$annot} = 1;
+                foreach my $annot (@annots) {
+                    $data_ref->{'gene'}->{$gene}->{'annots'}->{$annot} = 1;
+                }
+            }
+            else {
+                $data_ref->{'gene'}->{$gene}->{'annots'}->{$orig_annots} = 1;
             }
         }
         else { 
