@@ -21,8 +21,7 @@ my $header = "Motif\t"
              . "Exp_rand_overlap\t"
              . "Enrichment\t"
              . "p-value\t"
-             . "q-value\t"
-             . "orig.vs.MEME_p-value"
+             . "q-value"
              ;
 
 my $data = q{};
@@ -131,27 +130,22 @@ my $tmp_qval_file = $data . '.q_val_list.tmp.txt';
 $tmp_pval_file    = safename($tmp_pval_file);
 $tmp_qval_file    = safename($tmp_qval_file);
 
-# qvalue needs to read an entire list of p-values at once, or it fails to compute q-values properly.
-# At the same time, it's brain-damaged and won't report back the exact numerical description it was given.
-# To defeat that, I make a full list of p-values; then a full list of resulting q-values; then
-#     I read back the data in each list in parallel to force the exact mapping I want.
-
 open my $TMP_PVALS, '>', $tmp_pval_file;
 foreach my $p_val (@p_vals) {
     print $TMP_PVALS "$p_val\n";
 }
 close $TMP_PVALS;
 
-system "$qval_prog --verbosity 1 $tmp_pval_file > $tmp_qval_file";
+# '--append' is crucial, because it passes on the original p-values unchanged to the p-/q-value table.
+system "$qval_prog --append --verbosity 1 $tmp_pval_file > $tmp_qval_file";
 
 open my $TMP_QVALS, '<', $tmp_qval_file;
 while (my $input = <$TMP_QVALS>) {
     chomp $input;
     if ( $input =~ /\A (\S+) \t (\S+) \z/xms ) {
-        my $meme_p = $1;
-        my $q_val  = $2;
-        push @meme_ps, $meme_p;
-        push @q_vals, $q_val;
+        my $p_val = $1;
+        my $q_val = $2;
+        $data_ref->{'p_value'}->{$p_val}->{'q_value'} = $q_val;
     }
     else {
         die "Can't parse p- to q-value table $tmp_qval_file, at line: $input\n";
@@ -159,22 +153,10 @@ while (my $input = <$TMP_QVALS>) {
 }
 close $TMP_QVALS;
 
-my $p_count = @p_vals;
-$p_count--;
-
-foreach my $i (0..$p_count) {
-    my $p_val  = $p_vals[$i];
-    my $meme_p = $meme_ps[$i];
-    my $q_val  = $q_vals[$i];
-    $data_ref->{'p_value'}->{$p_val}->{'meme_p'}  = $meme_p;
-    $data_ref->{'p_value'}->{$p_val}->{'q_value'} = $q_val;
-}
-
 @results = sort { $a->[7] <=> $b->[7] } @results; 
 
 foreach my $result (@results) {
         my $p_val  = $result->[7];
-        my $meme_p = q{};
         my $q_val  = q{};
 
         if ( exists $data_ref->{'p_value'}->{$p_val}->{'q_value'} ) { 
@@ -184,17 +166,8 @@ foreach my $result (@results) {
             die "Failed to map p-value to q-value: $p_val\n";
         }
 
-        if ( exists $data_ref->{'p_value'}->{$p_val}->{'meme_p'} ) {
-            $meme_p = $data_ref->{'p_value'}->{$p_val}->{'meme_p'};
-        }
-        else {
-            die "Failed to map p-value to MEME p-value: $p_val\n";
-        }
-
-        my $meme_diff = $p_val - $meme_p;
-
         my $output = join "\t", @{ $result };
-        $output = $output . "\t$q_val\t$meme_diff";
+        $output = $output . "\t$q_val";
 
         print "$header\n" if $header;
         $header = q{};
