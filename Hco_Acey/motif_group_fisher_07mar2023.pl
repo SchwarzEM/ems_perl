@@ -90,20 +90,22 @@ foreach my $motif (@motifs) {
             $motif_class_overlap++;
         }
     }
-    my $n11 = $motif_class_overlap;
-    my $n1p = ($total_motif_genes - $motif_class_overlap);
-    my $np1 = ($total_class_genes - $motif_class_overlap);
-    my $npp = $total_gene_count;
 
-    my $fisher_pval = 'NA';
-    my $f_score     = calculateStatistic( n11=>$n11,
-                                          n1p=>$n1p,
-                                          np1=>$np1,
-                                          npp=>$npp);
+    my $fisher_pval = q{};
+    $fisher_pval    = calculateStatistic( n11=>$motif_class_overlap,
+                                          n1p=>$total_motif_genes,
+                                          np1=>$total_class_genes,
+                                          npp=>$total_gene_count, );
+
+    my $errorCode    = q{};
+    my $errorMessage = q{};
+    if ( ($errorCode = getErrorCode()) ) {
+         $errorMessage = getErrorMessage();
+         warn "Motif $motif has error $errorCode: $errorMessage\n";
+    }
 
     # Any motif that fails to get a Fisher p-value at all is discarded in this step:
-    if ( looks_like_number($f_score) ) {
-        $fisher_pval = $f_score;
+    if ( looks_like_number($fisher_pval) ) {
 
         my $exp_rand_overlap = ($total_motif_genes * ($total_class_genes / $total_gene_count)); 
         my $enrichment       = ($motif_class_overlap / $exp_rand_overlap);
@@ -118,6 +120,14 @@ foreach my $motif (@motifs) {
                        "$fisher_pval", 
                      );
         push @results, \@output;
+    }
+    else {
+        warn "Failed to assign Fisher p-value to motif: $motif\n";
+        warn "Putative Fisher p-value of motif $motif was: $fisher_pval\n";
+        warn "    Motif class overlap (n11) was: $motif_class_overlap\n";
+        warn "    Total motif genes (n1p) was: $total_motif_genes\n";
+        warn "    Total class genes (np1) was: $total_class_genes\n";
+        warn "    Total gene count (npp) was: $total_gene_count\n";
     }
 }
 
