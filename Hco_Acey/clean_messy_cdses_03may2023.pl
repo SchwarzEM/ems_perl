@@ -15,6 +15,10 @@ while (my $input = <>) {
         if ( $id =~ /\A (\S+\.\d+)\.\d+ \z/xms ) {
             $id = $1;
         }
+        # Some names are: 'F53F10.2b.1'
+        if ( $id =~ /\A (\S+\.\d+)[a-z]\.\d+ \z/xms ) {
+            $id = $1;
+        }
         print "$id\t$text\n";
     }
     else {
