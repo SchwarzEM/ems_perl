@@ -1,10 +1,11 @@
 #!/usr/bin/env perl
 
-# ace2fimotif.pl -- Erich Schwarz <ems394@cornell.edu>, originally 3/26/2010; revised 5/26/2023 for post-2010 *.ace reformattings.
+# ace2fimotif.pl -- Erich Schwarz <ems394@cornell.edu>, originally 3/26/2010; revised 5/26-27/2023 for post-2010 *.ace reformattings.
 # Purpose: generate a minimal MEME motif usable by FIMO.
 
 use strict;
 use warnings;
+use autodie;
 use Getopt::Long;
 use Scalar::Util qw(looks_like_number);  # Perl Cookbook 2.1.
 
@@ -230,10 +231,29 @@ sub print_fimotif_header {
 
 sub print_indiv_fimotifs { 
     my $_fimotifs_ref = $_[0];
-    foreach my $_fimotif (sort keys %{ $_fimotifs_ref } ) { 
+    LOOP: foreach my $_fimotif (sort keys %{ $_fimotifs_ref } ) { 
+        # To avoid motifs that somehow end up with no recorded width, require a defined positive integer width
+        #     for printing; otherwise, silently do nothing with this motif.
+        my $_width = q{};
+        my $_sites_used = q{};
+
+        if ( exists $fimotifs_ref->{$_fimotif}->{'width'} ) {
+             $_width = $fimotifs_ref->{$_fimotif}->{'width'};
+        }
+        else {
+            warn "Not printing pathological motif $_fimotif, because it has no assignable width\n";
+            next LOOP;
+        }
+
+        if ( exists $_fimotifs_ref->{$_fimotif}->{'sites_used'} ) {
+            $_sites_used = $_fimotifs_ref->{$_fimotif}->{'sites_used'};
+        }
+        else {
+            warn "Not printing pathological motif $_fimotif, because it has no assignable 'sites used' value\n";
+            next LOOP;
+        }
+
         print "MOTIF $_fimotif\n";
-        my $_width = $fimotifs_ref->{$_fimotif}->{'width'};
-        my $_sites_used = $_fimotifs_ref->{$_fimotif}->{'sites_used'};
         # Does this next line need >0 numbers?
         print "BL   MOTIF $_fimotif width=0 seqs=0\n";
         print "$matrix_type: alength= 4 w= $_width nsites= $_sites_used E= 0\n";
@@ -252,7 +272,18 @@ sub print_indiv_fimotifs {
 
 sub print_indiv_fimotif_files { 
     my $_fimotifs_ref = $_[0];
-    foreach my $_fimotif (sort keys %{ $_fimotifs_ref } ) { 
+    LOOP: foreach my $_fimotif (sort keys %{ $_fimotifs_ref } ) { 
+        # Avoid trying to print pathological motifs, and warn about their existence.
+        if (! exists $fimotifs_ref->{$_fimotif}->{'width'} ) {
+            warn "Not printing pathological motif $_fimotif, because it has no assignable width\n";
+            next LOOP;
+        }
+        if (! exists $_fimotifs_ref->{$_fimotif}->{'sites_used'} ) {
+            warn "Not printing pathological motif $_fimotif, because it has no assignable 'sites used' value\n";
+            next LOOP;
+        }
+
+        # Print any other motifs.
         my $_outfile = $_fimotif;
         $_outfile = failsafe_name($_outfile);
         open my $_OUTFILE, '>', $_outfile 
