@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# ace2fimotif.pl -- Erich Schwarz <ems394@cornell.edu>, originally 3/26/2010; revised 5/26/2023 for post-2010 *.ace reformattings.
+# ace2fimotif.pl -- Erich Schwarz <ems394@cornell.edu>, 3/26/2010 (legacy version).
 # Purpose: generate a minimal MEME motif usable by FIMO.
 
 use strict;
@@ -74,24 +74,22 @@ while (my $input = <>) {
     chomp $input;
 
     # Default is getting names from .ace; this allows >= 2 names/matrices.
-    if ( $input =~ /\A Position_Matrix \s+ \" ( [^\"\s]+ ) \" /xms ) { 
+    if ( $input =~ /\A Position_Matrix \s+ : \s+ \" ( [^\"\s]+ ) \" /xms ) { 
         $name         = $1;
         zero_several_values();
         # Default, but can be overridden by data in .ace:
         $fimotifs_ref->{$name}->{'sites_used'} = $sites_used;
     }
 
-    # Specifically require that this be seen for data to be recorded.
-    # Note that, sometime between 2010 and 2023, there was apparently a reformatting of the data model 
-    #     for Position_Matrix from "Type\s+(Frequency|Weight)" to "(Frequency|Weight)"
-    if ( $input =~ /\A Frequency \b /xms ) { 
+    # Specifically require that this be seen for data to be recorded:
+    if ( $input =~ /\A Type \s+ Frequency \b /xms ) { 
         $record_data = 1;
     }
 
     # Since fimo doesn't seem to allow PWM inputs, don't use them.
     # Stop reading, zero out recently read data, delete the motif's data by name, and *then* delete its name.
     # Being any less thorough leads to unhappy error messages later, when the program tries to print half-entered motifs.
-    if ( $input =~ /\A Weight \b /xms ) {
+    if ( $input =~ /\A Type \s+ Weight \b /xms ) {
         zero_several_values();
         delete ${ $fimotifs_ref }{$name};
         $name = q{};
@@ -103,7 +101,7 @@ while (my $input = <>) {
     }
 
     # Read residue values from the PFM:
-    if ( $record_data and ( $input =~ /\A Site_values \s+ ["] ([ACGT]) ["] \s+ ( \S+ (?: \s+ \S+)* ) /xms ) ) { 
+    if ( $record_data and ( $input =~ /\A Site_values \s+ ([ACGT]) \s+ ( \S+ (?: \s+ \S+)* ) /xms ) ) { 
         $residue      = $1;
         $value_string = $2;
 
