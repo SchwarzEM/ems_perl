@@ -284,7 +284,7 @@ sub print_indiv_fimotif_files {
         }
 
         # Print any other motifs.
-        my $_outfile = $_fimotif;
+        my $_outfile = "$_fimotif.meme.txt";
         $_outfile = failsafe_name($_outfile);
         open my $_OUTFILE, '>', $_outfile 
             or die "Can't open output file $_outfile: $!";
