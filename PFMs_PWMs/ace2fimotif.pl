@@ -10,6 +10,7 @@ use Getopt::Long;
 use Scalar::Util qw(looks_like_number);  # Perl Cookbook 2.1.
 
 my $name         = q{};  # Optionally for *one* motif; can't list 2+; otherwise, get names from .ace.
+my $alt_name     = q{};
 my $cg_freq      = q{};  # Optionally user-provided; otherwise defaults to C. elegans value.
 my $sites_used   = q{};  # Optionally user-provided (defaults to 1 -- to hand-edit! -- or no. in .ace).
 my $width        = q{};
@@ -80,6 +81,13 @@ while (my $input = <>) {
         zero_several_values();
         # Default, but can be overridden by data in .ace:
         $fimotifs_ref->{$name}->{'sites_used'} = $sites_used;
+    }
+
+    if ( $input =~ /\A Brief_id \s+ ["] (.+) ["] /xms ) {
+        $alt_name = $1;
+        # Fill in any spaces with '_'.
+        $alt_name =~ s/\s/_/g;
+        $fimotifs_ref->{$name}->{'alt_name'} = $alt_name;
     }
 
     # Specifically require that this be seen for data to be recorded.
@@ -208,7 +216,8 @@ if ($files_output) {
 }
 
 sub zero_several_values {
-    $record_data  = 0;  
+    $record_data  = 0;
+    $alt_name     = q{};
     $value_string = q{};
     @raw_values   = ();
     @sum_values   = ();
@@ -218,7 +227,7 @@ sub zero_several_values {
 
 sub print_fimotif_header { 
     # The documentation says '3.0'; I assume accuracy makes more sense.
-    print "MEME version 4.3.0\n",
+    print "MEME version 5.4.1\n",
           "\n",
           "ALPHABET= ", @res_list, "\n",
           "strands: + -\n",
@@ -234,8 +243,13 @@ sub print_indiv_fimotifs {
     LOOP: foreach my $_fimotif (sort keys %{ $_fimotifs_ref } ) { 
         # To avoid motifs that somehow end up with no recorded width, require a defined positive integer width
         #     for printing; otherwise, silently do nothing with this motif.
-        my $_width = q{};
+        my $_alt_name   = q{};
+        my $_width      = q{};
         my $_sites_used = q{};
+
+        if ( exists $fimotifs_ref->{$_fimotif}->{'alt_name'} ) {
+             $_alt_name = $fimotifs_ref->{$_fimotif}->{'alt_name'};
+        }
 
         if ( exists $fimotifs_ref->{$_fimotif}->{'width'} ) {
              $_width = $fimotifs_ref->{$_fimotif}->{'width'};
@@ -253,7 +267,7 @@ sub print_indiv_fimotifs {
             next LOOP;
         }
 
-        print "MOTIF $_fimotif\n";
+        print "MOTIF $_fimotif $_alt_name\n";
         # Does this next line need >0 numbers?
         print "BL   MOTIF $_fimotif width=0 seqs=0\n";
         print "$matrix_type: alength= 4 w= $_width nsites= $_sites_used E= 0\n";
@@ -273,6 +287,11 @@ sub print_indiv_fimotifs {
 sub print_indiv_fimotif_files { 
     my $_fimotifs_ref = $_[0];
     LOOP: foreach my $_fimotif (sort keys %{ $_fimotifs_ref } ) { 
+        my $_alt_name   = q{};
+        if ( exists $fimotifs_ref->{$_fimotif}->{'alt_name'} ) {
+             $_alt_name = $fimotifs_ref->{$_fimotif}->{'alt_name'};
+        }
+
         # Avoid trying to print pathological motifs, and warn about their existence.
         if (! exists $fimotifs_ref->{$_fimotif}->{'width'} ) {
             warn "Not printing pathological motif $_fimotif, because it has no assignable width\n";
@@ -288,7 +307,7 @@ sub print_indiv_fimotif_files {
         $_outfile = failsafe_name($_outfile);
         open my $_OUTFILE, '>', $_outfile 
             or die "Can't open output file $_outfile: $!";
-        print {$_OUTFILE} "MEME version 3.0\n",
+        print {$_OUTFILE} "MEME version 5.4.1\n",
                           "\n",
                           "ALPHABET= ", @res_list, "\n",
                           "strands: + -\n",
@@ -297,7 +316,7 @@ sub print_indiv_fimotif_files {
                           "A $a_freq C $c_freq G $g_freq T $t_freq\n",
                           "\n",
                           ;
-        print {$_OUTFILE} "MOTIF $_fimotif\n";
+        print {$_OUTFILE} "MOTIF $_fimotif $_alt_name \n";
         my $_width = $fimotifs_ref->{$_fimotif}->{'width'};
         my $_sites_used = $_fimotifs_ref->{$_fimotif}->{'sites_used'};
         # Does this next line need >0 numbers?
