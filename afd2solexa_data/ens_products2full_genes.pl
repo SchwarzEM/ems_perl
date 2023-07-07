@@ -18,13 +18,24 @@ my $data_ref;
 
 while (my $input = <>) {
     if ( $input =~ /\A > /xms ) { 
-        if ( $input !~ / \A > .+ \s gene:\S+ \s .+ \s gene_symbol:\S+ \s /xms ) { 
+        if ( $input !~ / \A > .+ \s gene:\S+ \s /xms ) { 
             die "Can't parse FASTA header line: $input\n";
         }
-        if ( $input =~ / \A > .+ \s gene:(\S+) \s .+ \s gene_symbol:(\S+) \s /xms ) {
+        # Note: ENSEMBL allows two genes to share a single gene symbol, unlike WormBase, so don't ban that.
+        elsif ( $input =~ / \A > .+ \s gene:(\S+) \s .+ \s gene_symbol:(\S+) \s /xms ) {
             $gene_id     = $1;
             $gene_symbol = $2;
-            # Note: ENSEMBL allows two genes to share a single gene symbol, unlike WormBase, so don't ban that.
+            $data_ref->{'gene_id'}->{$gene_id}->{'gene_symbol'} = $gene_symbol;
+       }
+        elsif ( $input =~ / \A > .+ \s gene_symbol:(\S+) \s .+ \s gene:(\S+) \s /xms ) {
+            $gene_id     = $1;
+            $gene_symbol = $2;
+            $data_ref->{'gene_id'}->{$gene_id}->{'gene_symbol'} = $gene_symbol;
+       }
+
+        elsif ( $input =~ / \A > .+ \s gene:(\S+) \s /xms ) {
+            $gene_id     = $1;
+            $gene_symbol = $1;
             $data_ref->{'gene_id'}->{$gene_id}->{'gene_symbol'} = $gene_symbol;
        }
    }
