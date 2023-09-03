@@ -61,7 +61,6 @@ while ( my $input_dir = <$DIRS> ) {
     print $OUT "-d $input_dir ";
     print $OUT "$destination ;\n";
     close $OUT;
-    $i++;
 }
 close $DIRS;
 
