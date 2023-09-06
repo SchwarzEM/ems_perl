@@ -21,7 +21,7 @@ my $header = "biosample_accession"    #   [...]
              . "\t"
              . "library_selection"    #   cDNA            # complementary DNA
              . "\t"
-             . "library_layout"       #   Paired-end [or] Single
+             . "library_layout"       #   paired [or] single
              . "\t"
              . "platform"             #   ILLUMINA
              . "\t"
@@ -116,7 +116,7 @@ while ( my $input = <$FILELIST> ) {
             $filename  = $read_file1;
             $filename2 = $read_file2;
 
-            $library_layout = "Paired-end";
+            $library_layout = "paired";
 
             print "$biosample_accession\t",
                   "$library_ID\t",
