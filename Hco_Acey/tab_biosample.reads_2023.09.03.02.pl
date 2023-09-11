@@ -154,7 +154,7 @@ while ( my $input = <$FILELIST> ) {
 
             $filename  = $read_file1;
 
-            $library_layout = "Single";
+            $library_layout = "single";
 
             print "$biosample_accession\t",
                   "$library_ID\t",
