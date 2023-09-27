@@ -34,6 +34,9 @@ my %ok_headers = ( wormbase => 'wormbase',
                    ensembl  => 'ensembl',
                    ens      => 'ensembl',
 
+                   uniprot  => 'uniprot',
+                   upr      => 'uniprot',
+
                    flybase  => 'flybase',
                    fly      => 'flybase',
 
@@ -73,6 +76,7 @@ if ( $help or (! @infiles) ) {
         "                   'augustus|aug'\n",
         "                   'aug_like'\n",
         "                   'ensembl|ens'\n",
+        "                   'uniprot|upr'\n",
         "                   'flybase|fly'\n",
         "                   'fly_old'\n",
         "                   'maker|mak'\n",
@@ -88,7 +92,20 @@ if ( $help or (! @infiles) ) {
 
 if ($header_type) { 
     if (! exists $ok_headers{$header_type} ) { 
-        die "Header type must be 'wormbase|wb', 'augustus|aug', 'aug_like', 'ensembl|ens', 'flybase|fly', 'fly_old', 'maker|mak', 'parasite|par', 'par_old', 'column3|col3', or 'self', not \"$header_type\"\n";
+        die "Header type must be ",
+            "'wormbase|wb', ",
+            "'augustus|aug', ",
+            "'aug_like', ",
+            "'ensembl|ens', ",
+            "'flybase|fly', ",
+            "'fly_old', ",
+            "'maker|mak', ",
+            "'parasite|par', ",
+            "'par_old', ",
+            "'column3|col3', ",
+            "or 'self', not \"$header_type\"",
+            "\n",
+            ;
     }
     else { 
         # Map to full names of header types, if abbreviated:
@@ -121,6 +138,12 @@ foreach my $infile (@infiles) {
             }
 
             elsif ( ( $header_type eq 'ensembl' ) and ( $input =~ /\A > (\S+) \b .* \s gene[:] (\S+) \b .* \z/xms ) ) {
+                $protein = $1;
+                $gene    = $2;
+                $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
+            }
+
+            elsif ( ( $header_type eq 'uniprot' ) and ( $input =~ /\A > (\S+) \b .* \s GN= (\S+) \b .* \z/xms ) ) {
                 $protein = $1;
                 $gene    = $2;
                 $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
