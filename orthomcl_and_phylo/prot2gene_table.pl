@@ -156,7 +156,7 @@ foreach my $infile (@infiles) {
                 $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
             }
 
-            elsif ( ( $header_type eq 'parasite_old' ) and ( $input =~ /\A > (\S+) \b .* \s gene_id= (\S+) \b .* \z/xms ) ) {
+            elsif ( ( $header_type eq 'parasite_old' ) and ( $input =~ /\A > (\S+) \b .* \s gene_id= ([^;\s]+) .* \z/xms ) ) {
                 $protein = $1;
                 $gene    = $2;
                 $data_ref->{'protein'}->{$protein}->{'gene'} = $gene;
