@@ -49,6 +49,12 @@ while (my $input = <$CDS2GENE2SPP>) {
         #     A single protein *can* be produced by 2+ (very similar) genes!
         #     Mercifully, there really is at least one CDS per gene...
 
+        # It turns out that OrthoFinder silently changes ':', '(', and ')' in CDS/protein names to '_';
+        #     so this must also be done with CDS/protein names in cds2gene2species.
+        $cds_id =~ s/[:]/_/g;
+        $cds_id =~ s/[(]/_/g;
+        $cds_id =~ s/[)]/_/g;
+
         if ( exists $data_ref->{'CDS'}->{$cds_id} ) {
             die "Redundant CDS ID: $cds_id\n";
         }
@@ -80,6 +86,11 @@ while (my $input = <$INPUT_OFND>) {
         my @orthoprots = split /\s+/, $oprots_line;
 
         foreach my $o_prot (@orthoprots) { 
+            # Although this should be superfluous for OrthoFinder, to be safe, revise ':', '(', and ')' to '_" anyway.
+            $o_prot =~ s/[:]/_/g;
+            $o_prot =~ s/[(]/_/g;
+            $o_prot =~ s/[)]/_/g;
+
             if (! exists $data_ref->{'CDS'}->{$o_prot}->{'gene'} ) {
                 die "In OrthoFinder group $ortho_grp, cannot map CDS $o_prot to gene.\n";
             }
@@ -110,7 +121,7 @@ foreach my $gene (@all_genes) {
     my $orth_grp_count = @orth_grps;
     if ( $orth_grp_count >= 2 ) {
         my $species = $data_ref->{'gene'}->{$gene}->{'species'};
-        warn "Gene $gene from species $species belongs to $orth_grp_count OrthoFinder groups: @orth_grps\n";
+        warn "MULTIGROUP: Gene $gene from species $species belongs to $orth_grp_count OrthoFinder groups: @orth_grps\n";
     }
 }
 
