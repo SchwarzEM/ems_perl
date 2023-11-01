@@ -146,10 +146,10 @@ foreach my $gene1 (@genes) {
     my $length_text = q{};
     if (! $max) { 
         if ( $shortest == $longest ) { 
-            $length_text = "\"$shortest aa\"";
+            $length_text = "$shortest aa";
         }
         if ( $longest != $shortest ) { 
-            $length_text = "\"$shortest-$longest aa\"";
+            $length_text = "$shortest-$longest aa";
         }
     }
     if ($max) { 
