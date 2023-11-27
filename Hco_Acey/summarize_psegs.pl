@@ -1,108 +1,106 @@
 #!/usr/bin/env perl
 
-# summarize_psegs.pl -- Erich Schwarz <ems394@cornell.edu>, 9/28/2014.
-# Purpose: given the segments of proteome identified by pseg, the proteome's pre-masked version, and a gene-to-CDS table, generate a gene-oriented SEG annotation table.
-
 use strict;
 use warnings;
 use Getopt::Long;
-use autodie;
 
-my $gene2cds = q{};
 my $seg      = q{};
+my $gene2cds = q{};
 my $proteome = q{};
 
-my $gene = q{};
-my $cds  = q{};
+# These two variables need to be initialized *outside* the $input loop for $proteome:
+my $gene_p = q{};
+my $tx_p   = q{};
 
 my $data_ref;
 my $verbose;
 my $help;
 
-GetOptions ( 'gene2cds=s' => \$gene2cds,
-             'seg=s'      => \$seg,
+GetOptions ( 'seg=s'      => \$seg,
+             'gene2cds=s' => \$gene2cds,
              'proteome=s' => \$proteome,
              'verbose'    => \$verbose,
              'help'       => \$help, );
 
-if ( $help or (! $gene2cds) or (! $seg) or (! $proteome) ) { 
-    die "Format: summarize_psegs.pl\n",
-        "    --gene2cds|-g  [Gene-to-CDS table, used to map CDS/protein names in PSEG-masked proteome]\n",
-        "    --proteome|-p  [unmasked source proteome]\n",
+if ( $help or (! $seg) or (! $proteome) ) { 
+    die "Format: summarize_psegs_19mar2023.pl\n",
         "    --seg|-s       [FASTA of low-complexity pseg domains]\n",
-        "    --verbose|-b   [print *all* isoforms values for PSEG, rather than default of the highest %]\n",
+        "    --gene2cds|-g  [Gene to CDS TSV table]\n",
+        "    --proteome|-p  [proteome; both -s and -p assume AUGUSTUS gene/trx names]\n",
+        "    --verbose|-b   [print *all* isoforms values for SEG, rather than default of the highest %]\n",
         "    --help|-h      [print this message]\n",
         ;
 }
 
-open my $GENE, '<', $gene2cds;
-while (my $input = <$GENE>) {
+open my $GENE2CDS, '<', $gene2cds;
+while (my $input = <$GENE2CDS>) {
+    my $gene = q{};
+    my $tx   = q{};
     chomp $input;
-    if ( $input =~ /\A (\S+) \t (\S+) \z/xms ) {
+    if ( $input =~ /\A (\S+) \t (\S+) \z/xms ) { 
         $gene = $1;
-        $cds  = $2;
-        if ( ( exists $data_ref->{'cds'}->{$cds}->{'gene'} ) and ( $data_ref->{'cds'}->{$cds}->{'gene'} ne $gene ) ) {
-            die "CDS $cds is inconsistently mapped to both $data_ref->{'cds'}->{$cds}->{'gene'} and $gene\n";
-        }
-        $data_ref->{'cds'}->{$cds}->{'gene'} = $gene;
+        $tx   = $2;
     }
     else {
-        die "From gene-to-CDS name table $gene2cds, can't parse input line: $input\n";
+        die "From gene-to-CDS table $gene2cds, can't parse: $input\n";
     }
+    $data_ref->{'tx'}->{$tx}->{'gene'} = $gene ;
 }
-close $GENE;
+close $GENE2CDS;
 
 open my $PROTEOME, '<', $proteome;
 while (my $input = <$PROTEOME>) { 
     chomp $input;
-    if ( $input =~ /\A > /xms ) {
+    if ( $input =~ /\A > /xms ) { 
         if ( $input =~ /\A > (\S+) /xms ) {
-            $cds  = $1;
-            $gene = q{};
-            if (! exists $data_ref->{'cds'}->{$cds}->{'gene'} ) {
-                die "In proteome $proteome, cannot map CDS $cds to gene\n";
+            $tx_p   = $1;
+            $gene_p = q{};
+            if ( exists $data_ref->{'tx'}->{$tx_p}->{'gene'} ) {
+                $gene_p = $data_ref->{'tx'}->{$tx_p}->{'gene'};
             }
-            $gene = $data_ref->{'cds'}->{$cds}->{'gene'};
+            else {
+                die "Cannot map transcript/CDS $tx_p to a gene\n";
+            }
         }
-        else {
+        else { 
             die "From proteome $proteome, can't parse: $input\n";
         }
     }
     else {
         $input =~ s/\s//g;
         my $len = length($input);
-        $data_ref->{'gene'}->{$gene}->{'cds'}->{$cds}->{'len'} += $len;
+        $data_ref->{'gene'}->{$gene_p}->{'tx'}->{$tx_p}->{'len'} += $len;
     }
 }
 close $PROTEOME;
 
 open my $PSEG, '<', $seg;
 while (my $input = <$PSEG>) { 
+    my $gene = q{};
+    my $tx   = q{};
     chomp $input;
     if ( $input =~ /\A > /xms ) { 
-        my $start = q{};
-        my $stop  = q{};
+        # Sample input:
+        # >HCON_00000030-00001(758-772) transcript=HCON_00000030-00001 gene=HCON_00000030
+        # >HCON_00022890-00001(6-76) transcript=HCON_00022890-00001 gene=HCON_00022890
+        if ( $input =~ /\A [>] (\S+) \( (\d+) \- (\d+) \) \s /xms ) { 
+            $tx       = $1;
+            my $start = $2;
+            my $stop  = $3;
 
-        if ( $input =~ /\A > (\S+) \b .* \( (\d+) \- (\d+) \) /xms ) { 
-            $cds   = $1;
-            $start = $2;
-            $stop  = $3;
-        }
-        else {
-            die "From PSEG file $seg, can't parse: $input\n";
-        }
+            if ( exists $data_ref->{'tx'}->{$tx}->{'gene'} ) {
+                $gene = $data_ref->{'tx'}->{$tx}->{'gene'};
+            }
+            else {
+                die "Cannot map transcript/CDS $tx to a gene\n";
+            }
 
-        if ( $input =~ / \( (\d+) \- (\d+) \) .* \( (\d+) \- (\d+) \) /xms ) { 
-            die "In PSEG file $seg, anomalous header line whose PSEG-marked coordinates cannot be reliably identified: $input\n";
+            my $seg_span = $stop - $start + 1;
+            $data_ref->{'gene'}->{$gene}->{'tx'}->{$tx}->{'seg_span'} += $seg_span;
         }
-
-        if (! exists $data_ref->{'cds'}->{$cds}->{'gene'} ) {
-            die "In PSEG file $seg, cannot map CDS $cds to gene\n";
+        else { 
+            die "From pseg proteome $seg, can't parse: $input\n";
         }
-        $gene = $data_ref->{'cds'}->{$cds}->{'gene'};
-
-        my $seg_span = $stop - $start + 1;
-        $data_ref->{'gene'}->{$gene}->{'cds'}->{$cds}->{'seg_span'} += $seg_span;
     }
 }
 close $PSEG;
@@ -112,13 +110,13 @@ my $header = "Gene\tPsegs\n";
 foreach my $gene1 (@genes) { 
     my $annots_ref;
     my @annots = ();
-    my @cdses  = grep { /\S/ } sort keys %{ $data_ref->{'gene'}->{$gene1}->{'cds'} };
-    foreach my $cds1 (@cdses) { 
-        if ( exists $data_ref->{'gene'}->{$gene1}->{'cds'}->{$cds1}->{'len'}) { 
-            my $length   = $data_ref->{'gene'}->{$gene1}->{'cds'}->{$cds1}->{'len'};
+    my @txs    = grep { /\S/ } sort keys %{ $data_ref->{'gene'}->{$gene1}->{'tx'} };
+    foreach my $tx1 (@txs) { 
+        if ( exists $data_ref->{'gene'}->{$gene1}->{'tx'}->{$tx1}->{'len'}) { 
+            my $length   = $data_ref->{'gene'}->{$gene1}->{'tx'}->{$tx1}->{'len'};
             my $seg_span = 0;
-            if ( exists $data_ref->{'gene'}->{$gene1}->{'cds'}->{$cds1}->{'seg_span'}) { 
-                $seg_span = $data_ref->{'gene'}->{$gene1}->{'cds'}->{$cds1}->{'seg_span'};
+            if ( exists $data_ref->{'gene'}->{$gene1}->{'tx'}->{$tx1}->{'seg_span'}) { 
+                $seg_span = $data_ref->{'gene'}->{$gene1}->{'tx'}->{$tx1}->{'seg_span'};
             }
             if ( $seg_span > 0 ) { 
                 my $orig_fraction = ($seg_span/$length);
@@ -129,7 +127,7 @@ foreach my $gene1 (@genes) {
             }
         }
         else { 
-            die "Failed to get length for protein product of $cds1\n";
+            die "Failed to get length for protein product of $tx1\n";
         }
     }
     my $annot_text = q{};
