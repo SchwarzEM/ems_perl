@@ -34,7 +34,10 @@ while ( my $annot = <$GFF3> ) {
     # Sherm_X AUGUSTUS        start_codon     8833    8835    .       -       0       ID=start_codon-34914;Parent=Sherm_X.g16153.t1;gene_id=Sherm_X.g16153;transcript_id=Sherm_X.g16153.t1
     # Sherm_X AUGUSTUS        stop_codon      8236    8238    .       -       0       ID=stop_codon-34917;Parent=Sherm_X.g16153.t1;gene_id=Sherm_X.g16153;transcript_id=Sherm_X.g16153.t1
 
-    if ( $annot =~ /\A \S+ \t \S+ \t transcript \t .+ \t ID= ([^;\s]+)/xms ) {
+    # Note that GFF3s reformatted to work with GenBank will have 'mRNA', not 'transcript'; 
+    #     this script has been revised to deal with either format.
+
+    if ( $annot =~ /\A \S+ \t \S+ \t (?:transcript|mRNA) \t .+ \t ID= ([^;\s]+)/xms ) {
         my $tx = $1;
         if (! exists $banned{$tx} ) {
             print "$annot\n";
