@@ -14,7 +14,7 @@ while (my $input = <>) {
     elsif ( $input =~ /\A (\S+) \t \S+ \t (.+) \z/xms ) { 
         my $front = $1;
         my $back  = $2;
-        print "$front\tliftOver-UCSC+N2_WS289 \t$back\n";
+        print "$front\tliftOver-UCSC+N2_WS289\t$back\n";
     }
     elsif ( $input =~ /\A [#][#] gff-version \s+ \d+ \z/xms ) { 
         print "$input\n";
