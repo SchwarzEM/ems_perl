@@ -58,7 +58,7 @@ while (my $input = <$INFILE>) {
         }
 
         $i++;
-        my $j = sprintf "%02u", $i;
+        my $j = sprintf "%03u", $i;
 
         my $output_script = "job_nippo_salmon_2024.02.20.$j.sh";
         $output_script    = safename($output_script);
