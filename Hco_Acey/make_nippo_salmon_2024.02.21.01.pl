@@ -26,7 +26,7 @@ GetOptions ( 'infiles=s'   => \$infile,
              'help'        => \$help,   );
 
 if ( $help or (! $infile) ) {
-    die "Format: make_nippo_salmon_2024.02.20.01.pl\n",
+    die "Format: make_nippo_salmon_2024.02.21.01.pl\n",
         "    --infile|-i     <input table, with prefix-file(s) pairs>\n",
         "    --arguments|-a  <optional: in quotes, arguments for salmon quant; note that --threads 16 is hard-coded>\n",
         "    --start|-s      <starting index; default of 1>\n",
@@ -63,10 +63,10 @@ while (my $input = <$INFILE>) {
         $i++;
         my $j = sprintf "%03u", $i;
 
-        my $output_script = "job_nippo_salmon_2024.02.20.$j.sh";
+        my $output_script = "job_nippo_salmon_2024.02.21.$j.sh";
         $output_script    = safename($output_script);
 
-        my $output_prefix = $prefix . ".salmon_2024.02.20.$j";
+        my $output_prefix = $prefix . ".salmon_2024.02.21.$j";
 
         if ( exists $data_ref->{'prefix'}->{$prefix} ) {
             die "Redundant input prefix: $prefix\n";
@@ -106,7 +106,6 @@ foreach my $prefix (@prefixes) {
 
     print $OUT "salmon --no-version-check quant --threads 16 $args ";
     print $OUT '--index $PROJECT/nippo_steiner/Nippo_genome/2024.02.19/salmon/dbs/Nippo_2023.07.15.01_gentrome_index ';
-    print $OUT "--libType A ";
     print $OUT "--mates1 $input_data_1 ";
     print $OUT "--mates2 $input_data_2 ";
     print $OUT "--output $output_prefix ";
