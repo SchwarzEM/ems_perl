@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use autodie;
 
+my $header = '##gff-version 3';
+
 while ( my $input = <> ) {
     chomp $input;
     if ( $input !~ /\A[#]/xms ) {
@@ -21,6 +23,9 @@ while ( my $input = <> ) {
             my $end_nt      = $vals[10];
             my $strand      = $vals[11];
             my $e_value     = $vals[17];
+
+            print "$header\n" if $header;
+            $header = q{};
 
             # Column 1: "seqid"
             print "$seqname";
