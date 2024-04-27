@@ -80,7 +80,7 @@ while (my $input = <$PROT>) {
             $tx   = $1;
             $gene = $2;
         }
-        elsif ( ( $format eq 'aug_like' ) and ( $input =~ /\A > ((\S+)\.t\d+) \z/xms ) ) {
+        elsif ( ( $format eq 'aug_like' ) and ( $input =~ /\A > ((\S+)\.t\d+) \b/xms ) ) {
             $tx   = $1;
             $gene = $2;
         }
