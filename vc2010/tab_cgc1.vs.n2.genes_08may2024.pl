@@ -11,7 +11,7 @@ my $data_ref;
 while (my $input = <>) {
     chomp $input;
     # ID=chrI.g1.t1.cds;Parent=chrI.g1.t1     WBGene00022277
-    if ( $input =~ /\A ID=\S+\.g\d+\.t\d+\.cds;Parent=(\S+\.g\d+)\.t\d+ \t (WBGene\d+) \z/xms ) {
+    if ( $input =~ /\A ID=\S+\.g\d+\.t\d+\.cds;Parent=(\S+\.g\d+)\.t\d+ \t (WBGene\d+\S+) \z/xms ) {
         my $cgc1_gene = $1;
         my $n2_gene   = $2;
         $data_ref->{'cgc1_gene'}->{$cgc1_gene}->{'n2_gene'}->{$n2_gene} = 1;
