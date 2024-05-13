@@ -40,6 +40,8 @@ my %ok_headers = ( wormbase => 'wormbase',
                    parasite_old => 'parasite_old',
                    par_old      => 'parasite_old',
 
+                   liftoff  => 'liftoff',
+
                    column3  => 'column3',
                    col3     => 'column3',
 );
@@ -68,6 +70,7 @@ if ( $help or (! @infiles) ) {
         "                   'maker_old|mak_old'\n",
         "                   'parasite|par'\n",
         "                   'parasite_old|par_old'\n",
+        "                   'liftoff'\n",
         "                or 'column3|col3';\n", 
         "                   default is 'wormbase']\n",
         "    --help|-h     [print this message]\n",
@@ -133,6 +136,14 @@ foreach my $infile (@infiles) {
                 $gene    = $3;
                 $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
             }
+
+            elsif ( ( $header_type eq 'liftoff' ) and ( $input =~ /\A > ( (\S+) \b .* gene_id= ([^;\s]+) [;] .* ) \z/xms ) ) {
+                $header  = $1;
+                $protein = $2;
+                $gene    = $3;
+                $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
+            }
+
 
             elsif ( ( $header_type eq 'augustus' ) and ( $input =~ /\A > ( ( (\S+ \.g\d+) \.t\d+ ) \b .* ) \z/xms ) ) {
                 $header  = $1;
