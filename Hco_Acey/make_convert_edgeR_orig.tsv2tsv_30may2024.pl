@@ -4,13 +4,16 @@ use strict;
 use warnings;
 use autodie;
 
+use File::Basename;
+
 my $header = '#!/bin/bash';
 
 while (my $input = <>) {
     chomp $input; 
     # sample inputs: 
     # 01/VT_7d_r_Fem.vs.VT_7d_m_Fem_edgeR_exactTest_2024.05.27.01.orig.tsv.txt
-    if ( $input =~ /\A ((\S+) _edgeR_exactTest_ \d+\.\d+\.\d+\.\d+)\.orig\.tsv\.txt \z/xms ) { 
+    my $infile = basename($input);
+    if ( $infile =~ /\A ((\S+) _edgeR_exactTest_ \d+\.\d+\.\d+\.\d+)\.orig\.tsv\.txt \z/xms ) { 
         my $file_stem = $1;
         my $geno_stem = $2;
 
