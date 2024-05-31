@@ -101,7 +101,7 @@ foreach my $prefix (@prefixes) {
     print $OUT '. $PROJECT/mambaforge-pypy3/etc/profile.d/mamba.sh ;', "\n";
     print $OUT 'mamba activate salmon_1.10.2 ;', "\n";
 
-    print $OUT "salmon --no-version-check quant --numBootstraps 100 --threads 16 --seqBias --gcBias --posBias --discardOrphansQuasi ";
+    print $OUT "salmon --no-version-check quant --numBootstraps 1000 --threads 16 --seqBias --gcBias --posBias --discardOrphansQuasi ";
     print $OUT '--index $PROJECT/nippo_steiner/Nippo_genome/2024.02.19/salmon/dbs/Nippo_2023.07.15.01_gentrome_index ';
     print $OUT "--libType A ";
     print $OUT "--mates1 $input_data_1 ";
