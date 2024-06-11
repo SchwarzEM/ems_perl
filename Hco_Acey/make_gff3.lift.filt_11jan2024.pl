@@ -39,25 +39,25 @@ $mRNAs_of_gff3_only = safename($mRNAs_of_gff3_only);
 
 print "\n";
 
-print "$gff3";
+print "cat $gff3";
 print ' | perl -ne \' if ( /\A \S+ \t \S+ \t gene \t .* \t ID=(\S+?);/xms ) { print "$1\n" ; }\' | sort | uniq >';
 print " $genes_of_gff3 ;\n";
 
 print "\n";
 
-print "$pep";
+print "cat $pep";
 print ' | grep \'>\' | perl -ne \' if ( /gene_id=(\S+?);/xms ) { print "$1\n"; } \' | sort | uniq >';
 print " $genes_of_proteome ;\n";
 
 print "\n";
 
-print "$gff3";
+print "cat $gff3";
 print ' | perl -ne \' if ( /\A \S+ \t \S+ \t mRNA \t .* \t ID=(\S+?);/xms ) { print "$1\n" ; }\' | sort | uniq >';
 print " $mRNAs_of_gff3 ;\n";
 
 print "\n";
 
-print "$pep";
+print "cat $pep";
 print ' | grep \'>\' | perl -ne \' if ( /\A[>](\S+)/xms ) { print "$1\n"; } \' | sort | uniq >';
 print " $mRNAs_of_proteome ;\n";
 
