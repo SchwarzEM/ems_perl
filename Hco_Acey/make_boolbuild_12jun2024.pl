@@ -9,8 +9,10 @@ my $j = q{};
 
 while (my $input = <>) {
     chomp $input;
-    # Sample input: Nippo_ES.L4_annots_2024.05.09.01.tsv.txt
-    if ( $input =~ /\A (\S+) _annots .* \.tsv\.txt \z/xms ) {
+    # Sample inputs: 
+    # Nippo_ES.L4_annots_2024.05.09.01.tsv.txt
+    # VT_0d_r_Fem.vs.VT_0d_m_Fem.downreg_annot.tsv.txt
+    if ( $input =~ /\A (\S+) _annot .* \.tsv\.txt \z/xms ) {
         my $stem = $1;
 
         $i++;
