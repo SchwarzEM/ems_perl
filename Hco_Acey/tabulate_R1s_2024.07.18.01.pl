@@ -11,7 +11,7 @@ while (my $input = <>) {
     if ( $input =~ /\A \S+ \/ (\d+)_ (\S+?) _trm\.fastq\.gz \z/xms ) {
         my $number = $1;
         my $prefix = $2;
-        print "$prefix" . 'rep_' . "$number\t$input\n";
+        print "$prefix" . '_rep' . "$number\t$input\n";
     }
     else {
         die "Cannot parse input: $input\n";
