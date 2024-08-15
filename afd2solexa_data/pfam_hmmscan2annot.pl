@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 # pfam_hmmscan2annot.pl -- Erich Schwarz <ems394@cornell.edu>, 9/2/2016.
-# Purpose: given a gene2cds table and a PFAM/hmmscan 3.0 output, make a 2-column table of genes and PFAM domains.
+# Purpose: given a *cds2gene* table (not gene2cds table) and a PFAM/hmmscan 3.0 output, make a 2-column table of genes and PFAM domains.
 
 use strict;
 use warnings;
@@ -10,28 +10,28 @@ use autodie;
 
 my $data_ref;
 
-my $gene2cds = q{};
+my $cds2gene = q{};
 my $pfam     = q{};
 my $help;
 
-GetOptions ( 'gene2cds=s' => \$gene2cds,
+GetOptions ( 'cds2gene=s' => \$cds2gene,
              'pfam=s'     => \$pfam,
              'help'       => \$help, );
 
-if ( $help or (! $gene2cds) or (! $pfam) ) { 
-    die "Format: pfam_hmmscan2annot.pl --gene2cds|-g [gene-to-CDS table] --pfam|-p [PFAM/hmmscan 3.0 tabular output] --help|-h [print this message]\n";
+if ( $help or (! $cds2gene) or (! $pfam) ) { 
+    die "Format: pfam_hmmscan2annot.pl --cds2gene|-c [CDS-to-gene table] --pfam|-p [PFAM/hmmscan 3.0 tabular output] --help|-h [print this message]\n";
 }
 
-open my $GENE, '<', $gene2cds;
+open my $GENE, '<', $cds2gene;
 while (my $input = <$GENE>) { 
     chomp $input;
     if ( $input =~ /\A (\S+) \t (\S+) \z/xms ) { 
-        my $gene = $1;
-        my $cds  = $2;
+        my $cds  = $1;
+        my $gene = $2;
         $data_ref->{'cds'}->{$cds}->{'gene'} = $gene;
     }
     else { 
-        die "From transcript-to-gene table $gene2cds, can't parse input: $input\n";
+        die "From transcript-to-gene table $cds2gene, can't parse input: $input\n";
     }
 }
 close $GENE;
