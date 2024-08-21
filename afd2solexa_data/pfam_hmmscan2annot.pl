@@ -11,30 +11,49 @@ use autodie;
 my $data_ref;
 
 my $cds2gene = q{};
+my $gene2cds = q{};
 my $pfam     = q{};
 my $help;
 
 GetOptions ( 'cds2gene=s' => \$cds2gene,
+             'gene2cds=s' => \$gene2cds,
              'pfam=s'     => \$pfam,
              'help'       => \$help, );
 
-if ( $help or (! $cds2gene) or (! $pfam) ) { 
-    die "Format: pfam_hmmscan2annot.pl --cds2gene|-c [CDS-to-gene table] --pfam|-p [PFAM/hmmscan 3.0 tabular output] --help|-h [print this message]\n";
+if ( $help or ( (! $cds2gene ) and (! $gene2cds ) ) or ( $cds2gene and $gene2cds ) or (! $pfam ) ) { 
+    die "Format: pfam_hmmscan2annot.pl\n",
+        "            --cds2gene|-c [CDS-to-gene table] or --gene2cds|-g [gene-to-CDS table]\n",
+        "            --pfam|-p [PFAM/hmmscan 3.0 tabular output]\n",
+        "            --help|-h [print this message]\n",
+        ;
 }
 
-open my $GENE, '<', $cds2gene;
-while (my $input = <$GENE>) { 
+my $GENE_CDS;
+if ($cds2gene) {
+    open $GENE_CDS, '<', $cds2gene;
+}
+elsif ($gene2cds) {
+    open $GENE_CDS, '<', $gene2cds;
+}
+while ( my $input = <$GENE_CDS> ) { 
     chomp $input;
-    if ( $input =~ /\A (\S+) \t (\S+) \z/xms ) { 
-        my $cds  = $1;
-        my $gene = $2;
+    my $cds  = q{};
+    my $gene = q{};
+    if ( $cds2gene and ( $input =~ /\A (\S+) \t (\S+) \z/xms ) ) { 
+        $cds  = $1;
+        $gene = $2;
+        $data_ref->{'cds'}->{$cds}->{'gene'} = $gene;
+    }
+    elsif ( $gene2cds and ( $input =~ /\A (\S+) \t (\S+) \z/xms ) ) {
+        $gene = $1;
+        $cds  = $2;
         $data_ref->{'cds'}->{$cds}->{'gene'} = $gene;
     }
     else { 
-        die "From transcript-to-gene table $cds2gene, can't parse input: $input\n";
+        die "From transcript-to-gene table \"$cds2gene\" or gene-to-transcript table \"$gene2cds\", can't parse input: $input\n";
     }
 }
-close $GENE;
+close $GENE_CDS;
 
 open my $PFAM, '<', $pfam;
 while (my $input = <$PFAM>) {
