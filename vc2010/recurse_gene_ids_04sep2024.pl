@@ -65,6 +65,8 @@ close $NAMES;
 @set_list = uniq(@set_list);
 
 foreach my $set (@set_list) {
+    # Add this transformation at the last possible minute because '...' turns out to be unparseable, though useful internally.
+    $set =~ s/\.\.\./; /g;
     print "$set\n";
 }
 
