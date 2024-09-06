@@ -11,7 +11,7 @@ my $data_ref;
 
 while (my $input = <> ) {
     chomp $input;
-    if ( $input =~ /\A ([^\t]+) \t (\S+) \z/xms ) {
+    if ( $input =~ /\A ([^\t]+) \t ([^\t]+) \z/xms ) {
         my $gene  = $1;
         my $annot = $2;
         push @genes, $gene;
