@@ -43,7 +43,7 @@ open my $INDEX, '<', $index or die "Can't open index file $index: $!";
 $tab_count = 0;
 while (my $input = <$INDEX>) { 
     chomp $input;
-    if ($input =~ /\A (\S+) \b /xms ) { 
+    if ($input =~ /\A ([^\t]+) /xms ) { 
         $key_id = $1;
         $index_lines_ref->{'i'}->{$i} = $key_id;
         if ( exists $index_lines_ref->{'key_id'}->{$key_id} ) { 
