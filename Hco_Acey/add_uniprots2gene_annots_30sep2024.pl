@@ -40,7 +40,7 @@ while (my $input = <$GENE_ANNOT>) {
 
             # If a gene makes it past those filters, add it to the annotation set:
             push @annotated_genes, $gene;
-            $data_ref->{'gene'}->{$gene}->{'annot'} = $input;
+            $data_ref->{'gene'}->{$gene}->{'annot'} = $annot;
         }
     }
     else {
