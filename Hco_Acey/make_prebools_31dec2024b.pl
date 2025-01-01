@@ -14,7 +14,7 @@ while ( my $input = <> ) {
         $i++;
         print 'add_tab_annots.pl -f ',
               '-i ../annots/Sherm_2024.09.30.genes.txt ',
-              '-a ../annots/Sherm_summary_orthofinder_16spp_2024.12.17.01.tsv.txt ',
+              '-a Sherm_orthofinder.ids_16spp_2024.12.17.01.tsv.txt ',
               "$input ",
               '1>',
               "$outfile ",
