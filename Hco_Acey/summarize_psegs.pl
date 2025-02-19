@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+# summarize_psegs.pl -- Erich Schwarz <ems394@cornell.edu>, 3/20/2023.
+
 use strict;
 use warnings;
 use Getopt::Long;
