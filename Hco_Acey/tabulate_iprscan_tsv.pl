@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+# tabulate_iprscan_tsv.pl -- Erich Schwarz <ems394@cornell.edu>, 9/29/2022.
+
 use strict;
 use warnings;
 use autodie;
