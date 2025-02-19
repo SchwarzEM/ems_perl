@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+# id2nucmer_gffs_26aug2024.pl -- Erich Schwarz <ems394@cornell.edu>, 8/26/2024.
+
 use strict;
 use warnings;
 use autodie;
