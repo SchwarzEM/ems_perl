@@ -42,6 +42,8 @@ my %ok_formats = (
 
     wormbase      => 'wb',
     wb            => 'wb',
+
+    odd1          => 'odd1',
 );
 
 my $help;
@@ -63,7 +65,8 @@ if ($help or (! $proteome) or (! exists $ok_formats{$format}) ) {
         "                  'maker' or 'mak'\n",
         "                  'parasite' or 'par'\n",
         "                  'parasite_old' or 'par_old'\n",
-        "               or 'wormbase' or 'wb']\n",
+        "                  'wormbase' or 'wb'\n",
+        "               or 'odd1']\n",
         "    --proteome|-p [protein file; gets gene names, transcript names, and protein lengths]\n",
         "    --max|-m      [instead of human-readable range, give number of aa for largest isoform only]\n",
         "    --help|-h     [prints this message]\n",
@@ -115,6 +118,14 @@ while (my $input = <$PROT>) {
         elsif ( ( $format eq 'wb' ) and ( $input =~ /\A > (\S+) \s .* (WBGene\d+) /xms ) ) {
             $tx   = $1;
             $gene = $2;
+        }
+        elsif ( ( $format eq 'odd1' ) and ( $input =~ /\A > (\S+)  /xms ) ) {
+            $tx   = $1;
+            # This format *sometimes* has gene-tx pairs like 'L596_016929.1' and 'L596_016929.1',
+            #     but sometimes instead just has 'L596_016928' and 'L596_016928'.
+            # The substitution addresses this problem by only trimming tx to gene names when there is something to trim.
+            $gene = $tx;
+            $gene =~ s/\.\d+\z//;
         }
         else { 
             die "Can't parse input: $input\n";
