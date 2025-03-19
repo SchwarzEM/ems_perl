@@ -26,11 +26,12 @@ while ( my $input = <> ) {
     }
     else {
         my $necanhui1 = $vals[2];
+        my $necanhui  = $vals[3];
         my $necaroian = $vals[4];
         my $neccar1   = $vals[6];
         my $necjapan  = $vals[7];
         my $neckeiser = $vals[8];
-        my @anhuis     = ($necanhui1, $neckeiser);
+        my @anhuis     = ($necanhui1, $necanhui, $neckeiser);
         my @non_anhuis = ($necaroian, $neccar1, $necjapan);
 
         my $anhui_val     = max(@anhuis);
