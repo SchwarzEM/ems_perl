@@ -63,7 +63,8 @@ while ( my $input = <> ) {
 
         if ( exists $rename{$old_tag} ) {
             $new_tag = $rename{$old_tag};
-            $output = $lead_text . $new_tag . $back_text;
+            # Leave out "$lead_text ." in front to make the softalias actually work
+            $output = $new_tag . $back_text;
         }
 
         if ($output) {
