@@ -8,19 +8,19 @@ my $stem    = q{};
 my $script  = q{};
 my $i       = 0;
 my $j       = 0;
+my $in_bam  = q{};
 my $genome  = q{};
 
 while ( my $input = <> ) {
     chomp $input;
-    if ( $input =~ /\A (\S+) \.bam \t (\S+) \z/xms ) {
-        $stem   = $1;
-        $genome = $2;
+    if ( $input =~ /\A ((\S+) \.bam) \t (\S+) \z/xms ) {
+        $in_bam = $1;
+        $stem   = $2;
+        $genome = $3;
     }
     else {
         die "Cannot parse input $input\n";
     }
-    my $in_bam1 = "$stem.sort.bam";
-    my $in_bam2 = "$stem.dup_flag.sort.bam";
 
     $i++;
     $j = sprintf ("%02u", $i);
@@ -41,7 +41,7 @@ while ( my $input = <> ) {
     print $SCRIPT '. $PROJECT/mambaforge-pypy3/etc/profile.d/mamba.sh ;', "\n";
 
     print $SCRIPT "mamba activate freebayes_1.3.10 ;\n";
-    print $SCRIPT "freebayes --report-monomorphic -f $genome --standard-filters $in_bam1 > $stem.sort.fb01.vcf ;\n";
+    print $SCRIPT "freebayes --report-monomorphic -f $genome --standard-filters $in_bam > $stem.fb01.vcf ;\n";
     print $SCRIPT 'mamba deactivate ;', "\n";
 
     close $SCRIPT;
