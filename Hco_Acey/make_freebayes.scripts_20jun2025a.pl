@@ -41,7 +41,7 @@ while ( my $input = <> ) {
     print $SCRIPT '. $PROJECT/mambaforge-pypy3/etc/profile.d/mamba.sh ;', "\n";
 
     print $SCRIPT "mamba activate freebayes_1.3.10 ;\n";
-    print $SCRIPT "freebayes --report-monomorphic -f $genome --standard-filters $in_bam > $stem.fb01.vcf ;\n";
+    print $SCRIPT "freebayes -f $genome --standard-filters --report-monomorphic -g 200 $in_bam > $stem.fb01.vcf ;\n";
     print $SCRIPT 'mamba deactivate ;', "\n";
 
     close $SCRIPT;
