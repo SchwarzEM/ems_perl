@@ -12,7 +12,7 @@ my $genome  = q{};
 
 while ( my $input = <> ) {
     chomp $input;
-    if ( $input =~ /\A (\S+) \.sam \t (\S+) \z/xms ) {
+    if ( $input =~ /\A (\S+) \.bam \t (\S+) \z/xms ) {
         $stem   = $1;
         $genome = $2;
     }
