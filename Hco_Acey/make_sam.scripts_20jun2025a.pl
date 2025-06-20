@@ -27,7 +27,7 @@ while ( $in_sam = <> ) {
     $i++;
     $j = sprintf ("%02u", $i);
 
-    $script = "job_Necator_freebayes.etc_2025.06.20.$j.sh";
+    $script = "job_Necator_samtools_2025.06.20.$j.sh";
     $script = safename($script);
     open my $SCRIPT, '>', $script;
 
