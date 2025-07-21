@@ -44,6 +44,9 @@ my %ok_headers = ( wormbase => 'wormbase',
 
                    column3  => 'column3',
                    col3     => 'column3',
+
+                   irregular1 => 'irregular1',
+                   irr1       => 'irregular1',
 );
 
 my $header  = q{};
@@ -71,7 +74,8 @@ if ( $help or (! @infiles) ) {
         "                   'parasite|par'\n",
         "                   'parasite_old|par_old'\n",
         "                   'liftoff'\n",
-        "                or 'column3|col3';\n", 
+        "                   'column3|col3';\n", 
+        "                or 'irregular1|irr3';\n",
         "                   default is 'wormbase']\n",
         "    --help|-h     [print this message]\n",
         ;
@@ -191,6 +195,18 @@ foreach my $infile (@infiles) {
                 $header  = $1;
                 $protein = $2;
                 $gene    = $3;
+                $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
+            }
+
+            elsif ( ( $header_type eq 'irregular1' ) and ( $input =~ /\A > ( (\S+) .*) \z /xms ) ) {
+                $header  = $1;
+                $protein = $2;
+                # Default is for each protein name to exactly match its gene name:
+                $gene    = $protein;
+                # Alternatively, if the protein has a ".\d+" suffix:
+                if ( $protein =~ /\A (\S+) \. \d+ \z/xms ) {
+                    $gene = $1;
+                }
                 $data_ref->{'gene'}->{$gene}->{'protein'}->{$protein}->{'header'} = $header;
             }
 
