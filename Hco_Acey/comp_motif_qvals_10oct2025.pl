@@ -16,7 +16,7 @@ if ( (! $umass ) or (! $washu ) ) {
     die "Format: comp_motif_qvals_10oct2025.pl [UMass motif qvals] [WashU motif qvals] > [UMass/WashU motif qval comparison]\n";
 }
 
-my $header = "Motif\tUMass_qval\tWashU-only_qval\tWashU-only.to.UMessRatio";
+my $header = "Motif\tUMass_qval\tWashU-only_qval\tWashU-only.to.UMass_Ratio\tUMass.to.WashU-only_Ratio";
 my $data_ref;
 
 open my $UMASS, '<', $umass;
@@ -63,13 +63,13 @@ foreach my $raw_motif (@raw_motifs) {
     if ( ( exists $data_ref->{'motif'}->{$raw_motif}->{washu_qval} ) and ( $data_ref->{'motif'}->{$raw_motif}->{washu_qval} ne 'q-value' ) ) {
         $washu_qval = $data_ref->{'motif'}->{$raw_motif}->{washu_qval};
     }
-    my $ratio = ($washu_qval / $umass_qval);
-
+    my $w2m_ratio = ( $washu_qval / $umass_qval );
+    my $m2w_ratio = ( $umass_qval / $washu_qval );
     print "$header\n" if $header;
     $header = q{};
 
     if ( ( $umass_qval < 0.1 ) or ( $washu_qval < 0.1 ) ) {
-        print "$raw_motif\t$umass_qval\t$washu_qval\t$ratio\n";
+        print "$raw_motif\t$umass_qval\t$washu_qval\t$w2m_ratio\t$m2w_ratio\n";
     }
 }
 
