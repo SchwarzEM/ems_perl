@@ -14,15 +14,18 @@ if ( (! $infile ) or (! $phobius ) ) {
     die "Format: bool_phobius_18oct2025.pl [gene-Phobius annots.] [spec. Phobius annot.] > [Boolean table for spec. Phobius annot.]\n";
 }
 
+my $quote_phobius = quotemeta($phobius);
+
 open my $INFILE, '<', $infile;
 while ( my $input = <$INFILE> ) {
     chomp $input;
+
     if ( $input =~ /\A Gene \t/xms ) {
         $input = "Gene\t$phobius";
     }
     elsif ( ( $input !~ /\A Gene \t/xms ) and ( $input =~ /\A (\S+) \t/xms ) ) {
         my $gene = $1;
-        if ( ( $input =~ /\A \S+ \t .* \b $phobius [;] .* /xms ) or ( $input =~ /\A \S+ \t .* \b $phobius \z/xms ) ) {
+        if ( ( $input =~ /\A \S+ \t .* \b $quote_phobius [;] .* /xms ) or ( $input =~ /\A \S+ \t .* \b $quote_phobius \z/xms ) ) {
             $input = "$gene\ttrue";
         }
         else {
