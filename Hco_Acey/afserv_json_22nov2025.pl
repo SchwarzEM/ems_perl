@@ -13,6 +13,9 @@ if (! @inputs ) {
     die "Format: afserv_json_22nov2025.pl [job_name] [1+ FASTAs] > job_name.json ;\n"; 
 }
 
+# Use this array to keep the order of input sequences unchanged in the JSON.
+my @input_seqs = ();
+
 my $job = shift @inputs;
 
 foreach my $fasta (@inputs) {
@@ -22,6 +25,7 @@ foreach my $fasta (@inputs) {
         chomp $input;
         if ( $input =~ /\A [>] (\S+) /xms ) {
             $seq = $1;
+            push @input_seqs, $seq;
             $data_ref->{'seq'}->{$seq}->{'res'} = q{};
         }
         elsif ( $input =~ /\S/xms ) {
@@ -39,7 +43,7 @@ my @sequence_entries = map {
             count    => 1,
         }
     }
-} sort keys %{ $data_ref->{'seq'} };
+} @input_seqs;
 
 my $json_data = [
     {
