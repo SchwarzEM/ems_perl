@@ -33,7 +33,7 @@ while ( my $infile = <$LIST1> ) {
     chomp $infile;
     $i++;
     $j = sprintf "%02i", $i;
-    my $outfile = "$json_stem.$j.make_json.sh";
+    my $outfile = $json_stem. '_' . "$j.make_json.sh";
     $outfile    = safename($outfile);
     open my $OUTFILE, '>', $outfile;
     print $OUTFILE '$PROJECT/ems_perl/Hco_Acey/afserv_json_22nov2025.pl';
