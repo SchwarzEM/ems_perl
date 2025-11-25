@@ -4,22 +4,32 @@ use strict;
 use warnings;
 use autodie;
 
+use Scalar::Util qw(looks_like_number);
+
 my $json_stem    = q{};
 my $infile_list1 = q{};
 my $infile_list2 = q{};
+my $i            = 0;
+my $j            = 0;
 
 $json_stem    = $ARGV[0] if $ARGV[0];
 $infile_list1 = $ARGV[1] if $ARGV[1];
 $infile_list2 = $ARGV[2] if $ARGV[2];
-
-my $i = 0;
-my $j = 0;
+$i            = $ARGV[3] if $ARGV[3];
 
 my @targets = ();
 
 if ( (! $json_stem ) or (! $infile_list1 ) or (! $infile_list2 ) ) {
-    die "Format: make_jsons_24nov2025a.pl [json_stem] [varying single ligand file list] [constant multiple target file list] ;\n";
+    die "Format: make_jsons_24nov2025a.pl [json_stem] [single ligand file list]  [constant multiple target file list] [optional starting positive integer] ;\n";
 }
+
+if ( (! looks_like_number($i) ) or ( $i < 1 ) or ( $i != int($i) ) ) {
+    warn "Format: make_jsons_24nov2025a.pl [json_stem] [single ligand file list]  [constant multiple target file list] [optional starting positive integer] ;\n";
+    die "The [optional starting integer] must be (1) positive and (2) an integer, >= 1.\n";
+}
+
+# Once $i has been tested, reduce it by 1 so that loop numbering will work as if it started at 0.
+$i--;
 
 open my $LIST2, '<', $infile_list2;
 while ( my $infile2 = <$LIST2> ) {
