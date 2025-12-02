@@ -17,13 +17,13 @@ $hes_map  = $ARGV[1] if $ARGV[1];
 
 my $rev_hes_map = $hes_map;
 $rev_hes_map    = basename($rev_hes_map);
-$rev_hes_map    =~ s/\.txt\n//;
+$rev_hes_map    =~ s/\.txt\z//;
 $rev_hes_map    = "$rev_hes_map.rev.txt";
 $rev_hes_map    = safename($rev_hes_map);
 
 my $rev_hes_prot = $hes_prot;
 $rev_hes_prot    = basename($rev_hes_prot);
-$rev_hes_prot    =~ s/\.fa\n//;
+$rev_hes_prot    =~ s/\.fa\z//;
 $rev_hes_prot    = "$rev_hes_prot.rev.fa";
 $rev_hes_prot    = safename($rev_hes_prot);
 
