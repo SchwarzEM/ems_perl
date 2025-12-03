@@ -16,7 +16,12 @@ my $bigfasta = '/ocean/projects/mcb190015p/schwarze/heligmo/orig_proteomes/nxHel
 open my $LIST, '<', $list;
 while (my $seq = <$LIST>) {
     chomp $seq ;
-    my $command = "extract_fasta_subset.pl -w -f $bigfasta -l $seq > $seq.fa ;";
+
+    # Convert output names like 'GSXTT4C07H9V8V_length=405.fa' to 'GSXTT4C07H9V8V_length=405.fa'.
+    my $output = "$seq.fa";
+    $output =~ s/[=]/_/g;
+
+    my $command = "extract_fasta_subset.pl -w -f $bigfasta -l $seq > $output ;";
     print "$command\n";
 }
 close $LIST;
