@@ -42,7 +42,7 @@ open my $LIST1, '<', $infile_list1;
 while ( my $infile = <$LIST1> ) { 
     chomp $infile;
     $i++;
-    $j = sprintf "%02i", $i;
+    $j = sprintf "%03i", $i;
     my $outfile = $json_stem. '_' . "$j.make_json.sh";
     $outfile    = safename($outfile);
     open my $OUTFILE, '>', $outfile;
