@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
-# pfam_hmmscan2annot.pl -- Erich Schwarz <ems394@cornell.edu>, 9/2/2016.
-# Purpose: given a *cds2gene* table (not gene2cds table) and a PFAM/hmmscan 3.0 output, make a 2-column table of genes and PFAM domains.
+# pfam_hmmscan2annot.pl -- Erich Schwarz <ems394@cornell.edu>, orig. 9/2/2016; sig. revised 2/18/2026.
+# Purpose: given either a gene2cds or cds2gene* table, and a PFAM/hmmscan --tblout or --domtblout output, make a 2-column table of genes and PFAM domains.
 
 use strict;
 use warnings;
@@ -10,20 +10,27 @@ use autodie;
 
 my $data_ref;
 
-my $cds2gene = q{};
-my $gene2cds = q{};
-my $pfam     = q{};
+my $cds2gene  = q{};
+my $gene2cds  = q{};
+my $pfam_gene = q{};
+my $pfam_dom  = q{};
 my $help;
 
-GetOptions ( 'cds2gene=s' => \$cds2gene,
-             'gene2cds=s' => \$gene2cds,
-             'pfam=s'     => \$pfam,
-             'help'       => \$help, );
+GetOptions ( 'cds2gene=s'  => \$cds2gene,
+             'gene2cds=s'  => \$gene2cds,
+             'pfam_gene=s' => \$pfam_gene,
+             'pfam_dom=s'  => \$pfam_dom,
+             'help'        => \$help, );
 
-if ( $help or ( (! $cds2gene ) and (! $gene2cds ) ) or ( $cds2gene and $gene2cds ) or (! $pfam ) ) { 
+if (    $help 
+     or ( (! $cds2gene ) and (! $gene2cds ) ) 
+     or ( $cds2gene and $gene2cds ) 
+     or ( (! $pfam_gene ) and (! $pfam_dom ) ) 
+     or ( $pfam_gene and $pfam_dom )
+   ) { 
     die "Format: pfam_hmmscan2annot.pl\n",
         "            --cds2gene|-c [CDS-to-gene table] or --gene2cds|-g [gene-to-CDS table]\n",
-        "            --pfam|-p [PFAM/hmmscan 3.0 tabular output]\n",
+        "            --pfam_gene [PFAM/hmmscan --tblout tabular output] or --pfam_dom [PFAM/hmmscan --domtblout tabular output]\n",
         "            --help|-h [print this message]\n",
         ;
 }
@@ -55,22 +62,54 @@ while ( my $input = <$GENE_CDS> ) {
 }
 close $GENE_CDS;
 
-open my $PFAM, '<', $pfam;
+my $pfam_input = q{};
+
+if ( $pfam_gene ) {
+    $pfam_input = $pfam_gene;
+}
+elsif ( $pfam_dom ) {
+    $pfam_input = $pfam_dom;
+}
+else {
+    die "Cannot identify either Pfam/gene ($pfam_gene) or Pfam/domain ($pfam_dom) table as input.\n";
+}
+
+open my $PFAM, '<', $pfam_input;
 while (my $input = <$PFAM>) {
     chomp $input;
-    # Sample input line:
-    # Helitron_like_N      PF14214.4  tropicalis_2016.08.11_001.g1.t1 -
     if ( $input !~ /\A [#] /xms ) { 
-        if ( $input =~ /\A (\S+) \s+ (\S+) \s+ (\S+) \s+ /xms ) { 
-            my $pfam_name = $1;
-            my $pfam_acc  = $2;
-            my $cds       = $3;
+        my $pfam_name = q{};
+        my $pfam_acc  = q{};
+        my $cds       = q{};
+
+        # Sample input line from pfam_gene:
+        # HlyIII    PF03006.27    Necator_2022.05.29.01.07.g2.t3    -  [...]
+        if ( ( $pfam_gene ) and ( $input =~ /\A (\S+) \s+ (\S+) \s+ (\S+) \s+ /xms ) ) { 
+            $pfam_name = $1;
+            $pfam_acc  = $2;
+            $cds       = $3;
+            if (! exists $data_ref->{'cds'}->{$cds}->{'gene'} ) {
+                die "Cannot map CDS $cds to a gene\n";
+            }
+            my $gene      = $data_ref->{'cds'}->{$cds}->{'gene'};
+            my $pfam_desc = "$pfam_name [$pfam_acc]";
+            $data_ref->{'gene'}->{$gene}->{'pfam_desc'}->{$pfam_desc} = 1;
+        }
+        # Sample input line from pfam_dom: 
+        # HlyIII    PF03006.27    224    Necator_2022.05.29.01.07.g2.t3    -  [...]
+        elsif ( ( $pfam_dom ) and ( $input =~ /\A (\S+) \s+ (\S+) \s+ \d+ \s+ (\S+) \s+ /xms ) ) {
+            $pfam_name = $1;
+            $pfam_acc  = $2;
+            $cds       = $3;
+            if (! exists $data_ref->{'cds'}->{$cds}->{'gene'} ) {
+                die "Cannot map CDS $cds to a gene\n";
+            }
             my $gene      = $data_ref->{'cds'}->{$cds}->{'gene'};
             my $pfam_desc = "$pfam_name [$pfam_acc]";
             $data_ref->{'gene'}->{$gene}->{'pfam_desc'}->{$pfam_desc} = 1;
         }
         else { 
-            die "From PFAM table $pfam, can't parse input: $input\n";
+            die "From PFAM table $pfam_input, can't parse input: $input\n";
         } 
     }
 }
