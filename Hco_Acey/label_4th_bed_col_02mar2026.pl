@@ -14,12 +14,16 @@ if (! $bed ) {
 open my $BED, '<', $bed;
 while ( my $input = <$BED> ) { 
     chomp $input;
+
     # Sample input:
     # Necator_chrIV     76      1444    .       .       -       AUGUSTUS        gene    .       ID=Necator_chrIV.g13292
     if ( $input =~ /\A (\S+ \t \d+ \t \d+ \t) \S+ (\t \S+ \t \S+ \t \S+ \t gene \t \S+ \t ID[=] (\S+)) \z/xms ) {
         my $front = $1;
         my $back  = $2;
         my $gene  = $3;
+
+        $gene =~ s/[;]\z//;   # Some gene IDs need to have a trailing ';' removed
+
         my $output = "$front$gene$back";
         print "$output\n";
     }
