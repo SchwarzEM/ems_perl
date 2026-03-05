@@ -13,11 +13,15 @@ my $chroms = q{};
 my $date   = q{2001.01.01.01};
 my $i      = 0;
 
-
 $infile = $ARGV[0] if $ARGV[0];
 $chroms = $ARGV[1] if $ARGV[1];
 $date   = $ARGV[2] if $ARGV[2];
-$i      = $ARGV[3] if $ARGV[3];
+
+# For this last variable, if I'm specifying it, I need to do two steps:
+if ($ARGV[3]) {
+    $i = $ARGV[3];
+    $i--;
+}
 
 if ( (! $infile ) or (! $chroms ) or ( $i < 0 ) or (! looks_like_number($i) ) or (! $i == int($i) ) ) {
     die "Format: make_freebayes.scripts_04mar2026a.pl\n",
