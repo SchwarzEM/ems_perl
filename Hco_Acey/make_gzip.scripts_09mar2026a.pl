@@ -49,7 +49,7 @@ while ( my $input = <$INFILE> ) {
     }
 
     $i++;
-    $j = sprintf ("%02u", $i);
+    $j = sprintf ("%03u", $i);
 
     $script = "job_gzip_" . "$date.$j.sh";
     $script = safename($script);
