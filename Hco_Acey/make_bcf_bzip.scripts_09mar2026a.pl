@@ -70,7 +70,7 @@ while ( my $input = <$INFILE> ) {
     print $SCRIPT "bgzip -l 1 -@ 4 $input ;\n";
     print $SCRIPT "mamba deactivate ;\n";
     print $SCRIPT 'mamba activate bcftools_1.23 ;', "\n";
-    print $SCRIPT "bcftools index $output ;\n";
+    print $SCRIPT "bcftools index --threads 4 $output ;\n";
     print $SCRIPT "mamba deactivate ;\n";
 
     close $SCRIPT;
