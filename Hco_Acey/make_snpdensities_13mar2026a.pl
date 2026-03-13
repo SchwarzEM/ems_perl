@@ -36,7 +36,7 @@ while ( my $infile = <$INLIST> ) {
     if ( $basename =~ / \A (\S+_gen\.ngm\.\S+_illu) \. .+ \. (\S+?_chr[IVX]+) \. .+ \.vcf\.gz \z/xms ) {
         my $gen = $1;
         my $chr = $2;
-        print "vcftools --gzvcf $infile --remove-indels --SNPdensity $window --out $gen.$chr --temp $tmpdir ;\n" ;
+        print "vcftools --gzvcf $infile --remove-indels --SNPdensity $window --out $gen.$chr.nt$window --temp $tmpdir ;\n" ;
     }
     else {
         die "Can't parse basename: $basename\n";
