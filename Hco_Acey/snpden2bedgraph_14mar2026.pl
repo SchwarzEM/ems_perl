@@ -8,16 +8,36 @@ use Scalar::Util qw(looks_like_number);
 
 my $infile = q{};
 my $bin    = q{};
+my $chr    = q{};
 
 $infile = $ARGV[0] if $ARGV[0];
 $bin    = $ARGV[1] if $ARGV[1];
+$chr    = $ARGV[2] if $ARGV[2];
 
-if ( (! $infile ) or (! $bin ) or (! looks_like_number($bin) ) ) {
-    die "Format: snpden2bed_13mar2026.pl [input snpden file] [bin size] > [output BED file]\n";
+my %chr_max = ();
+
+if ( (! $infile ) or (! $bin ) or (! looks_like_number($bin) ) or (! $chr ) ) {
+    die "Format: snpden2bedgraph_14mar2026.pl [input snpden file] [bin size] [chr size file] > [output BEDGraph file]\n";
 }
 
-open my $INFILE, '<', $infile;
+open my $CHR, '<', $chr;
+while ( my $input = <$CHR> ) {
+    chomp $input;
+    if ( $input =~ /\A (\S+) \t (\d+) \z/xms ) {
+        my $chr_id   = $1;
+        my $chr_size = $2;
+        if (! looks_like_number($chr_size) ) {
+            die "From chromosome size file $chr, cannot identify chromosome nt size in: $input\n";
+        }
+        $chr_max{$chr_id} = $chr_size;
+    }
+    else {
+        die "From chromosome size file $chr, cannot parse: $input\n";
+    }
+}
+close $CHR;
 
+open my $INFILE, '<', $infile;
 while ( my $input = <$INFILE> ) {
     chomp $input;
 
@@ -32,8 +52,15 @@ while ( my $input = <$INFILE> ) {
         my $coord   = $2;
         my $density = $3;
         if ( ( $chrom ne 'CHROM' ) and ( looks_like_number($coord) ) and ( looks_like_number($density) ) ) {
-            my $start = $coord;
-            my $end   = ($coord + $bin);
+            my $start  = $coord;
+            my $end    = ($coord + $bin);
+            if (! exists  $chr_max{$chrom} ) {
+                die "Can't identify nt size for chromosome $chrom\n";
+            }
+            my $max_nt = $chr_max{$chrom};
+            if ( $end > $max_nt ) {
+                $end = $max_nt;
+            }
             print "$chrom\t$start\t$end\t$density\n";
         }
     }
@@ -41,6 +68,5 @@ while ( my $input = <$INFILE> ) {
         die "Can't parse input line: $input\n";
     }
 }
-
 close $INFILE;
 
