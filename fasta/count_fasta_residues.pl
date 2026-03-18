@@ -49,7 +49,7 @@ if ( $help or (! @infiles) or ( $concise and $extra ) ) {
         "    --basename|-b   [only give input file basenames]\n",
         "    --type|-t       [sequence type: either 'dna' or 'protein|prot'; default is 'dna']\n",
         "    --concise|-c    [only compute number of sequences and their total length; mutually incompatible with --extra]\n",
-        "    --extra|-e      [give mean, median, SDs of contigs/scaffolds]\n",
+        "    --extra|-e      [give mean and median of contigs/scaffolds]\n",
         "    --redundant|-r  [tolerate redundant sequence names; use with caution and only for messed-up FASTA]\n",
         "    --help|-h       [print this message]\n",
         ;
@@ -284,21 +284,15 @@ foreach my $infile (@infiles) {
     }
 
     my $scaf_mean    = q{};
-    my $scaf_std_dev = q{};
     my $scaf_median = q{};
 
     my $contig_mean    = q{};
-    my $contig_std_dev = q{};
     my $contig_median = q{};
 
     if ($extra) { 
         $scaf_mean   = $stat1->mean();
         $scaf_mean   = sprintf("%.1f", $scaf_mean);
         $scaf_mean   = commify($scaf_mean);
-
-        $scaf_std_dev   = $stat1->standard_deviation();
-        $scaf_std_dev   = sprintf("%.1f", $scaf_std_dev);
-        $scaf_std_dev   = commify($scaf_std_dev);
 
         $scaf_median   = $stat1->median();
         $scaf_median   = sprintf("%.1f", $scaf_median);
@@ -308,10 +302,6 @@ foreach my $infile (@infiles) {
             $contig_mean = $stat2->mean();
             $contig_mean = sprintf("%.1f", $contig_mean);
             $contig_mean = commify($contig_mean);
-
-            $contig_std_dev = $stat2->standard_deviation();
-            $contig_std_dev = sprintf("%.1f", $contig_std_dev);
-            $contig_std_dev = commify($contig_std_dev);
 
             $contig_median = $stat2->median();
             $contig_median = sprintf("%.1f", $contig_median);
@@ -352,7 +342,6 @@ foreach my $infile (@infiles) {
     if ($extra) { 
         print "$scaffold_abbrev mean $residue_type:      $scaf_mean\n";
         print "$scaffold_abbrev median $residue_type:    $scaf_median\n";
-        print "$scaffold_abbrev s. dev. $residue_type:   $scaf_std_dev\n";
         print "\n";
     }
 
@@ -366,7 +355,6 @@ foreach my $infile (@infiles) {
         if ($extra) {
             print "Contig mean nt:     $contig_mean\n";
             print "Cont. median nt:    $contig_median\n";
-            print "Cont. s. dev. nt:   $contig_std_dev\n";
             print "\n";
         }
     }
