@@ -17,17 +17,17 @@ while (my $input = <> ) {
         my $fdr  = $3;
         if ( ( looks_like_number($fc) ) and ( looks_like_number($fdr) ) and ( $fdr <= 0.001 ) ) {
             if ( $fc >= 1 ) {
-                print "Gene\tMale_bias\n";
+                print "$gene\tMale_bias\n";
             }
             elsif ( $fc <= -1 ) {
-                print "Gene\tFem_bias\n";
+                print "$gene\tFem_bias\n";
             }
             else {
-                print "Gene\tNo_bias\n";
+                print "$gene\tNo_bias\n";
             }
         }
         else {
-            print "Gene\tNo_bias\n";
+            print "$gene\tNo_bias\n";
         }
     }
     else {
