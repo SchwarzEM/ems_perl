@@ -16,13 +16,13 @@ while ( my $input = <> ) {
          and ( $input =~ /nigoni_YR106/xms )
          and ( $input =~ /nigoni_ZF1220/xms )
          and ( $input =~ /orig_nigoni_JU1422/xms )
-         and ($input !~ /briggsae_AF16/xms )
-         and ($input !~ /briggsae_ED3036/xms )
-         and ($input !~ /briggsae_HK104/xms )
-         and ($input !~ /briggsae_JU349/xms )
-         and ($input !~ /briggsae_QR24/xms )
-         and ($input !~ /briggsae_QX1410/xms )
-         and ($input !~ /briggsae_VX34/xms )
+         and ( $input !~ /briggsae_AF16/xms )
+         and ( $input !~ /briggsae_ED3036/xms )
+         and ( $input !~ /briggsae_HK104/xms )
+         and ( $input !~ /briggsae_JU349/xms )
+         and ( $input !~ /briggsae_QR24/xms )
+         and ( $input !~ /briggsae_QX1410/xms )
+         and ( $input !~ /briggsae_VX34/xms )
        ) {
         print "$input\n";
     }
