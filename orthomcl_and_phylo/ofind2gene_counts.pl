@@ -8,7 +8,8 @@ my $data_ref;
 
 while (my $input = <>) {
     chomp $input;
-    if ( $input =~ /\A ([A-Z]+\d+) \(\d+ [ ] genes,\d+ [ ] taxa\)[:] \t ([^\t]+) \z/xms ) { 
+    # Originally this had \t instead of \s+ between [:] and orthology groups, but syntax had to be changed.
+    if ( $input =~ /\A ([A-Z]+\d+) \(\d+ [ ] genes,\d+ [ ] taxa\)[:] \s+ ([^\t]+) \z/xms ) { 
         my $o_group   = $1;
         my $o_members = $2;
 
