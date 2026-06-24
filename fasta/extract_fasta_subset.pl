@@ -16,6 +16,8 @@ my %input_names    = ();
 my %matched_names  = ();
 my $reading_subset = 'no';
 
+my $rename = q{};
+
 my $partial;
 my $exclude;
 my $warnings;
@@ -28,6 +30,7 @@ GetOptions ( 'list=s'     => \$input_list,
              'fasta=s{,}' => \@input_fastas,
              'partial'    => \$partial, 
              'exclude'    => \$exclude,
+             'rename=s'   => \$rename,
              'warnings'   => \$warnings,
              'help'       => \$help,     );
 
@@ -37,6 +40,7 @@ if ( (! $input_list) or (! @input_fastas) or $help ) {
         "    --fasta|-f     [one or more large FASTAs to extract]\n",
         "    --partial|-p   [optional -- allow matches of list names to *parts* of sequence names]\n",
         "    --exclude|-e   [optional -- reject list, keep rest]\n",
+        "    --rename|-r    [optional -- internally rename sequence, keeping orig. header as comment]\n",
         "    --warnings|-w  [optional -- in either positive or negative selection, warn about listed names that were missed]\n",
         "    --help|-h      [print this message]\n",
         ;
@@ -70,6 +74,12 @@ foreach my $input_fasta (@input_fastas) {
             $seq = $1;
             if (   ( find_match($seq,$partial)      and (! $exclude ) )
                 or ( (! find_match($seq,$partial) ) and $exclude      ) ) {
+
+                if ($rename) {
+                    $fasta_line =~ s/\A[>]//;
+                    $fasta_line = '>' . "$rename  $fasta_line";
+                }
+
                 print "$fasta_line\n";
                 $reading_subset = 'yes';
             }
