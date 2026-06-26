@@ -54,7 +54,7 @@ foreach my $pangene (@pangenes) {
         }
         @tax_genes = uniq(@tax_genes);
         my $tax_gene_text = join '; ', @tax_genes;
-        print "$pangene \t$tax_gene_text\n";
+        print "$pangene\t$tax_gene_text\n";
     }
 }
 
