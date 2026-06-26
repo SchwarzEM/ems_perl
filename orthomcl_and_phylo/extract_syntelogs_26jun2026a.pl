@@ -66,6 +66,7 @@ while ( my $input = <$PG_MEMBERS> ) {
         my $pangene      = $1;
         my $members_text = $2;
         my $outfasta = "$pangene.$suffix";
+        my $error    = "$pangene.$suffix.err";
 
         my @members = split '; ', $members_text;
         if ( exists $data_ref->{'listed_pg'}->{$pangene} ) {
@@ -81,7 +82,7 @@ while ( my $input = <$PG_MEMBERS> ) {
                     else {
                         die "From pg_member_list $pg_member_list, cannot map taxon $taxon to FASTA in: $input\n";
                     }
-                    print "extract_fasta_subset.pl -r $taxon -l $seqid -f $fasta >> $outfasta ;\n";
+                    print "extract_fasta_subset.pl -r $taxon -l $seqid -f $fasta 1>>$outfasta 2>>$error ;\n";
                 }
                 else {
                     die "From pg_member_list $pg_member_list, cannot parse member $member in: $input\n";
