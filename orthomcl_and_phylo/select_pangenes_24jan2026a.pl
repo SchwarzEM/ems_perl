@@ -45,7 +45,7 @@ close $INFILE;
 
 foreach my $pangene (@pangenes) {
     if ( exists $data_ref->{'pangene'}->{$pangene}->{'taxon'}->{$key_taxon}->{'flag'}->{'PASS'}->{'gene'} ) {
-        my @genes = sort keys %{ $data_ref->{'pangene'}->{$pangene}->{'taxon'}->{'Aroian'}->{'flag'}->{'PASS'}->{'gene'} };
+        my @genes = sort keys %{ $data_ref->{'pangene'}->{$pangene}->{'taxon'}->{$key_taxon}->{'flag'}->{'PASS'}->{'gene'} };
         foreach my $gene (@genes) {
             my @pass_taxa = sort keys %{ $data_ref->{'pangene'}->{$pangene}->{'flag'}->{'PASS'}->{'taxon'} };
             my $pass_taxon_text = join '; ', @pass_taxa;
