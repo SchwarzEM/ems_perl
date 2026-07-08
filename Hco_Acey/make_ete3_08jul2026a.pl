@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use autodie;
 
-my $header = "import ete3\nfrom ete3 import Tree\n";
+my $header = "import ete3\nfrom ete3 import Tree\n\n";
 
 while (my $input = <> ) {
     chomp $input;
@@ -29,6 +29,7 @@ while (my $input = <> ) {
         print 'alignment_taxa = {', $out_tax_text, '}', "\n";
         print 'tree.prune(alignment_taxa, preserve_branch_length=True)', "\n";
         print 'tree.write(outfile="', $out_tree, '", format=1)', "\n";
+        print "\n";
     }
     else {
         die "Cannot parse: $input\n";
