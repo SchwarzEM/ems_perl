@@ -6,7 +6,7 @@ use autodie;
 
 while ( my $input = <> ) {
     chomp $input;
-    if ( $input =~ /\A (?: [^\t]* \t){9} [^\t]* Parent [=] (\S+) \.t\d+ [;] [^\t]* \t (?: [^\t]* \t){9} [^\t]* transcript [:] (\S+) \z/xms ) {
+    if ( $input =~ /\A (?: [^\t]* \t){9} [^\t]* Parent [=] (\S+) \.t\d+ [;] [^\t]* \t (?: [^\t]* \t){9} [^\t]* transcript [:] ([^\s\;]+) /xms ) {
         my $nec   = $1;
         my $washu = $2;
         print "$nec\t$washu\n";
