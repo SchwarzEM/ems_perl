@@ -11,9 +11,9 @@ while ( my $infile = <> ) {
     if ( $infile =~ /\A ((\S+)\/pangene_\d+\.dna\.mafft_aln\.trimal_aut1)\.fa \z/xms ) {
         my $stem  = $1;
         my $dir   = $2;
-        my $json  = "$stem.absrel.json";
-        my $log   = "$stem.absrel.log.txt";
-        my $err   = "$stem.absrel.err.txt";
+        my $json  = "$stem.absrel.all.json";
+        my $log   = "$stem.absrel.all.log.txt";
+        my $err   = "$stem.absrel.all.err.txt";
 
         my $comm1 =   "hyphy CPU=16 absrel --alignment $infile --branches All --tree $dir/orthofinder.sp.tree.nwk"
                     . " --error-sink Yes --grid-size 500 --starting-points 5 --kill-zero-lengths No"
