@@ -1,0 +1,125 @@
+#!/usr/bin/env python
+
+import json
+import re
+import sys
+from pathlib import Path
+
+if len(sys.argv) < 2:
+    print("Error: Missing input file argument.", file=sys.stderr)
+    print("Usage: extract_absrel_jsons_21jul2026a.py <path_to_JSON_file_list.txt>", file=sys.stderr)
+    sys.exit(1)
+
+input_list_file = sys.argv[1]
+
+header_text = "Pangene\tBranch\tLRT\tRate_classes\tOmega_Distribution\tUncorrected_P-value\tCorrected_P-value"
+
+with open(input_list_file, "r") as list_f:
+    for line in list_f:
+        clean_path_str = line.strip()
+
+        if not clean_path_str:
+            continue
+
+        json_path = Path(clean_path_str)
+
+        try:
+            with open(json_path) as f:
+                data = json.load(f)
+
+            if header_text:
+                print(header_text)
+                header_text = ""
+
+            # Extract pangene name from filename
+            match = re.search(r"pangene_\d+", json_path.name)
+            pangene_name = match.group(0) if match else json_path.stem
+
+            # === 1. Find branches marked as "test" ===
+            tested_section = data.get("tested", {})
+            test_branches = set()
+
+            for _, branches_dict in tested_section.items():
+                if isinstance(branches_dict, dict):
+                    for branch_name, status in branches_dict.items():
+                        if str(status).lower() == "test":
+                            test_branches.add(str(branch_name))
+
+            # === Fallback for --branches All (exploratory mode) ===
+            if not test_branches:
+                ba_temp = data.get("branch attributes", {})
+                if "0" in ba_temp and isinstance(ba_temp["0"], dict):
+                    ba_temp = ba_temp["0"]
+                for bkey, battrs in ba_temp.items():
+                    if isinstance(battrs, dict) and bkey != "attributes":
+                        if (battrs.get("LRT") is not None or
+                            battrs.get("Uncorrected P-value") is not None or
+                            battrs.get("Corrected P-value") is not None):
+                            test_branches.add(str(bkey))
+                            orig = battrs.get("original name")
+                            if orig:
+                                test_branches.add(str(orig))
+
+            if not test_branches:
+                continue
+
+            # === 2. Get branch data (handles nested "0" structure) ===
+            ba = data.get("branch attributes", {})
+            if "0" in ba and isinstance(ba["0"], dict):
+                branch_attrs = ba["0"]
+            else:
+                branch_attrs = ba
+
+            # === 3. Extract data only for test branches ===
+            for branch_key, attrs in branch_attrs.items():
+                if not isinstance(attrs, dict) or branch_key == "attributes":
+                    continue
+
+                raw_original = attrs.get("original name", branch_key)
+                branch_id = str(branch_key)
+                original_id = str(raw_original) if raw_original is not None else branch_id
+
+                if branch_id not in test_branches and original_id not in test_branches:
+                    continue
+
+                lrt           = attrs.get("LRT", "None")
+                rate_classes  = attrs.get("Rate classes", "None")
+                uncorr_p      = attrs.get("Uncorrected P-value", "None")
+                corr_p        = attrs.get("Corrected P-value", "None")
+
+                display_name = original_id if original_id != branch_id else branch_id
+
+                # === Extract Omega (dN/dS) Distribution ===
+                rate_dists = attrs.get("Rate Distributions", [])
+                omega_str = "NA"
+
+                if isinstance(rate_dists, list):
+                    omega_parts = []
+                    for item in rate_dists:
+                        if isinstance(item, (list, tuple)) and len(item) >= 2:
+                            try:
+                                omega_val = float(item[0])
+                                prop_val  = float(item[1])
+                                omega_parts.append(f"{omega_val:.4f}:{prop_val:.4f}")
+                            except (ValueError, TypeError):
+                                continue
+                    if omega_parts:
+                        omega_str = " | ".join(omega_parts)
+                elif isinstance(rate_dists, dict):
+                    omega_parts = []
+                    for k, v in rate_dists.items():
+                        if isinstance(v, (list, tuple)) and len(v) >= 2:
+                            try:
+                                omega_val = float(v[0])
+                                prop_val  = float(v[1])
+                                omega_parts.append(f"{omega_val:.4f}:{prop_val:.4f}")
+                            except (ValueError, TypeError):
+                                continue
+                    if omega_parts:
+                        omega_str = " | ".join(omega_parts)
+
+                # Print in requested column order
+                print(pangene_name, display_name, lrt, rate_classes, omega_str, uncorr_p, corr_p, sep="\t")
+
+        except Exception as e:
+            print(f"Error processing {json_path}: {e}", file=sys.stderr)
