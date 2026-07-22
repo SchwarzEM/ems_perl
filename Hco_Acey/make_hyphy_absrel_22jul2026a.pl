@@ -26,7 +26,7 @@ while ( my $infile = <$IN_LIST> ) {
         my $log   = "$stem.$taxon.absrel.log.txt";
         my $err   = "$stem.$taxon.absrel.err.txt";
 
-        my $comm1 =   "hyphy CPU=16 absrel --alignment $infile --branches Anhui --tree $dir/orthofinder.sp.tree.nwk"
+        my $comm1 =   "hyphy CPU=16 absrel --alignment $infile --branches $taxon --tree $dir/orthofinder.sp.tree.nwk"
                     . " --error-sink Yes --grid-size 500 --starting-points 5 --kill-zero-lengths No"
                     . " --output $json 1>$log 2>$err ;"
                     ;
