@@ -15,7 +15,7 @@ $data_ref->{'taxon_type'}->{'Mag3'}     = 'non_Anhui';
 $data_ref->{'taxon_type'}->{'Oita'}     = 'non_Anhui';
 $data_ref->{'taxon_type'}->{'obscurus'} = 'non_Anhui';
 
-my $header = "Anhui_max_p\tNon_Anhui_max_p\tAnhui_min_p\tNon_Anhui_min_p";
+my $header = "Pangene\tAnhui_max_p\tNon_Anhui_max_p\tAnhui_min_p\tNon_Anhui_min_p";
 
 while ( my $input = <> ) {
     chomp $input;
@@ -74,6 +74,6 @@ foreach my $pangene (@pangenes) {
     if ( exists $data_ref->{'pangene'}->{$pangene}->{'min_p'}->{'non_Anhui'} ) {
         $non_Anhui_min_p = $data_ref->{'pangene'}->{$pangene}->{'min_p'}->{'non_Anhui'};
     }
-    print "$Anhui_max_p\t$non_Anhui_max_p\t$Anhui_min_p\t$non_Anhui_min_p\n";
+    print "$pangene\t$Anhui_max_p\t$non_Anhui_max_p\t$Anhui_min_p\t$non_Anhui_min_p\n";
 
 }
